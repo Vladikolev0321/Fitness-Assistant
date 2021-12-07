@@ -31,10 +31,13 @@ class StravaApi:
         # if percent change == 0 => last activity distance is equal to the max
         # if percent is negative => last activity distance is lower <>% by the max
         # if percent is positive => last activity distance is more <>% by the max
+        if percent_change == 0:
+            return "Your last activity distance is equal to the max"
+        elif percent_change < 0:
+            return f"Your last activity distance is lower by {percent_change}% from the max"
+        elif percent_change > 0:
+            return f"Your last activity distance is more by {percent_change}% from the max"
 
-        
-    
-    
 
     def __get_percent_change(current, previous):
         # add a check
