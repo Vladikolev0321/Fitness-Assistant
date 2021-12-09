@@ -14,10 +14,10 @@ def bot():
             result = fitness_assistant.get_steps_done_today()
         elif query == "calories-burned-today":
             result = fitness_assistant.get_calories_burned_today()
-        elif query == "avg-speed":
-            pass
-        elif query == "get-distance-changed":
-            pass
+        elif query == "avg-speed-ride":
+            result = fitness_assistant.get_average_speed_for_type_activity("Ride")
+        elif query == "get-distance-changed-ride":
+           result = fitness_assistant.get_distance_made_change_in_percents_for_type_activity("Ride")
         return str(result)
     except:
         pass

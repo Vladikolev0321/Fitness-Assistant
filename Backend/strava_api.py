@@ -39,9 +39,9 @@ class StravaApi:
             return f"Your last activity distance is more by {percent_change}% from the max"
 
 
-    def __get_percent_change(current, previous):
+    def __get_percent_change(self, current, previous):
         # add a check
-        return (current - previous) / previous * 100.0
+        return (current - previous) / previous * 100.00
 
 
     
