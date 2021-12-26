@@ -5,6 +5,10 @@ app = Flask(__name__)
 fitness_assistant = FitnessAssistant()
 
 
+@app.route('/', methods=["GET"])
+def test():
+    return "Hello"
+
 @app.route('/bot/steps', methods=["GET"])
 def get_steps():
     return str(fitness_assistant.get_steps_done_today())
