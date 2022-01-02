@@ -1,9 +1,11 @@
 import 'dart:async';
+import 'dart:convert';
 
 import 'package:flutter/material.dart';
 import 'package:frontend/global.dart';
 import 'package:frontend/models/chat_message.dart';
 import 'package:frontend/widgets/message.dart';
+import 'package:http/http.dart' as http;
 
 class ChatBody extends StatefulWidget {
   const ChatBody({ Key key }) : super(key: key);
@@ -36,8 +38,6 @@ class _ChatBodyState extends State<ChatBody> {
         messageType: ChatMessageType.text,
         isSender: isSender ? true : false,
     ));
-      // counter++;
-      // print(counter);
       Timer(Duration(milliseconds: 500),
             () => _scrollController.jumpTo(_scrollController.position.maxScrollExtent));
     });
@@ -114,7 +114,9 @@ class ChatInputField extends StatelessWidget {
                           hintText: "Type message",
                           border: InputBorder.none,
                         ),
-                       // onSubmitted: ,
+                        onSubmitted: (msg){
+                          this.getResponse();
+                        },
                         controller: _messageController,
                       ),
                     ),
@@ -127,4 +129,34 @@ class ChatInputField extends StatelessWidget {
       ),
     );
   }
+
+
+  void getResponse() {
+    String text = _messageController.text;
+    if(text.length > 0){
+      _messageController.text = "";
+      this.notifyParent(text, true);
+      var client = getClient();
+    try{
+      client.post(
+        Uri.parse(BOT_URL),
+        body: {"query": text},
+      ).then((response){
+        print(response.body);
+        Map<String, dynamic> data = jsonDecode(response.body);
+        this.notifyParent(data['response'], false);
+      
+      });
+    }
+    finally{
+      client.close();
+    }
+    }
+  }
+
+  // creating a client
+  http.Client getClient(){
+    return http.Client();
+  }
+
 }
