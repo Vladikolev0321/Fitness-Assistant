@@ -74,7 +74,7 @@ class ChatInputField extends StatelessWidget {
   ChatInputField({Key key, this.notifyParent}) : super(key: key);
   
   TextEditingController _messageController = TextEditingController();
-  static const String BOT_URL = "";
+  static const String BOT_URL = "http://127.0.0.1:5000/bot/message";
 
   @override
   Widget build(BuildContext context) {
@@ -140,7 +140,8 @@ class ChatInputField extends StatelessWidget {
     try{
       client.post(
         Uri.parse(BOT_URL),
-        body: {"query": text},
+        headers: {"Content-Type": "application/json"},
+        body: json.encode({"message": text}),
       ).then((response){
         print(response.body);
         Map<String, dynamic> data = jsonDecode(response.body);
