@@ -1,9 +1,14 @@
-from flask import Flask, request
+from flask import Flask, request, jsonify
+import requests
+from dummy_chat_controller import DummyChat
 from fitness_assistant import FitnessAssistant
+from flask_cors import CORS
 
 app = Flask(__name__)
-fitness_assistant = FitnessAssistant()
+CORS(app)
 
+fitness_assistant = FitnessAssistant()
+dummyChat = DummyChat(fitness_assistant)
 
 @app.route('/', methods=["GET"])
 def test():
@@ -13,7 +18,14 @@ def test():
 def get_steps():
     return str(fitness_assistant.get_steps_done_today())
 
-
+@app.route('/bot/message', methods=["POST"])
+def message_bot():
+    #return "Hello"
+    dummyChat = DummyChat(fitness_assistant)
+    #print(request.get_json())
+    message = request.get_json()['message']
+    response = dummyChat.accept_message(message)
+    return jsonify({"response":str(response)})
 
 @app.route('/bot', methods=["POST"])
 def bot():
