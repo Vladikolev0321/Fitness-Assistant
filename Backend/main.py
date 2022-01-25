@@ -1,14 +1,44 @@
+from functools import wraps
 from flask import Flask, request, jsonify
 import requests
 from dummy_chat_controller import DummyChat
 from fitness_assistant import FitnessAssistant
 from flask_cors import CORS
+import firebase_admin
+import json
+from firebase_admin import credentials, auth
 
 app = Flask(__name__)
 CORS(app)
 
+credents = credentials.Certificate('fbadmin.json')
+firebase = firebase_admin.initialize_app(credents)
+
 fitness_assistant = FitnessAssistant()
 dummyChat = DummyChat(fitness_assistant)
+
+def check_token(f):
+    @wraps(f)
+    def wrap(*args,**kwargs):
+        if not request.headers.get('authorization'):
+            return {'message': 'No token provided'},400
+        try:
+            user = auth.verify_id_token(request.headers['authorization'])
+            request.user = user
+        except:
+            return {'message':'Invalid token provided.'},400
+        return f(*args, **kwargs)
+    return wrap
+
+
+
+#Api route to test jwt
+@app.route('/api/userinfo')
+@check_token
+def userinfo():
+    return {'data': request.user['name']}, 200
+
+
 
 @app.route('/', methods=["GET"])
 def test():
@@ -45,4 +75,4 @@ def bot():
         pass
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run(debug=True, host="0.0.0.0")
