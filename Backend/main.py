@@ -2,20 +2,40 @@ from functools import wraps
 from flask import Flask, request, jsonify
 import requests
 from dummy_chat_controller import DummyChat
+from fitbit_api import FitbitApi
 from fitness_assistant import FitnessAssistant
 from flask_cors import CORS
 import firebase_admin
 import json
 from firebase_admin import credentials, auth
+from flask_sqlalchemy import SQLAlchemy
+#from dotenv import load_dotenv
+# to remove
+from config import FITBIT_ACCESS_TOKEN, FITBIT_CLIENT_ID, FITBIT_CLIENT_SECRET, FITBIT_REFRESH_TOKEN, SQLALCHEMY_DATABASE_URI
+from strava_api import StravaApi
+
+
 
 app = Flask(__name__)
 CORS(app)
+app.config['SQLALCHEMY_DATABASE_URI'] = SQLALCHEMY_DATABASE_URI
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+
+db = SQLAlchemy(app)
+
+
+class User(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(80), unique=True, nullable=False)
+
+    def __init__(self, name):
+        self.name = name
 
 credents = credentials.Certificate('fbadmin.json')
 firebase = firebase_admin.initialize_app(credents)
 
-fitness_assistant = FitnessAssistant()
-dummyChat = DummyChat(fitness_assistant)
+#fitness_assistant = FitnessAssistant()
+#dummyChat = DummyChat(fitness_assistant)
 
 def check_token(f):
     @wraps(f)
@@ -33,16 +53,31 @@ def check_token(f):
 
 
 #Api route to test jwt
-@app.route('/api/userinfo')
+@app.route('/api/userinfo', methods=["POST"])
 @check_token
 def userinfo():
+    request.data
     return {'data': request.user['name']}, 200
 
+# test route
+@app.route('/steps', methods=["GET"])
+@check_token
+def get_steps_try():
+    #data = request.json
+    data = request.headers
+    fitbit_api = FitbitApi(data['fitbitAccessToken'], data['fitbitRefreshToken'])
+    return str(fitbit_api.get_steps_done_today())
+
+# test route
+@app.route('/average_speed', methods=["GET"])
+@check_token
+def get_avg_speed():
+    data = request.headers
+    strava_api = StravaApi(data['stravaRefreshToken'])
+    return str(strava_api.get_average_speed_for_type_activity("Walk"))
 
 
-@app.route('/', methods=["GET"])
-def test():
-    return "Hello"
+
 
 @app.route('/bot/steps', methods=["GET"])
 def get_steps():
@@ -75,4 +110,5 @@ def bot():
         pass
 
 if __name__ == '__main__':
+    db.create_all()
     app.run(debug=True, host="0.0.0.0")
