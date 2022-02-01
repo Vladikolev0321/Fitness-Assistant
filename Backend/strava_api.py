@@ -1,15 +1,23 @@
-from config import STRAVA_AUTH_URL, STRAVA_ACTIVITIES_URL, STRAVA_DATA
+from config import STRAVA_AUTH_URL, STRAVA_ACTIVITIES_URL, STRAVA_CLIENT_ID, STRAVA_CLIENT_SECRET
 import requests
 import pandas as pd
 from pandas import json_normalize
 
 
-class StravaApi:
-    def __init__(self):
-        self.dataset = None
-        self.request_new_token_and_set_dataset()
 
-    def request_new_token_and_set_dataset(self):
+class StravaApi:
+    def __init__(self, refresh_token):
+        self.dataset = None
+        self.request_new_token_and_set_dataset(refresh_token)
+
+    def request_new_token_and_set_dataset(self, refresh_token):
+        STRAVA_DATA = {
+            'client_id': STRAVA_CLIENT_ID,
+            'client_secret': STRAVA_CLIENT_SECRET,
+            'refresh_token': refresh_token,
+            'grant_type': "refresh_token",
+            'f': 'json'
+        }
         response = requests.post(STRAVA_AUTH_URL, data=STRAVA_DATA, verify=False)
         access_token = response.json()['access_token']
 
