@@ -24,7 +24,7 @@ app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 
 
-class User(db.Model):
+class Profile(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(80), unique=True, nullable=False)
 
@@ -76,6 +76,16 @@ def get_avg_speed():
     strava_api = StravaApi(data['stravaRefreshToken'])
     return str(strava_api.get_average_speed_for_type_activity("Walk"))
 
+@app.route('/register', methods=["POST"])
+@check_token
+def register():
+    if not Profile.query.filter_by(name=request.user['name']):
+
+        entry = Profile(request.user['name'])
+        db.session.add(entry)
+        db.session.commit()
+        return f"User {request.user['name']} saved"
+    return str(request.user['name'])
 
 
 
