@@ -1,11 +1,11 @@
 import fitbit, datetime
-from config import FITBIT_ACCESS_TOKEN, FITBIT_CLIENT_ID, FITBIT_CLIENT_SECRET, FITBIT_REFRESH_TOKEN
-
+#from config import FITBIT_ACCESS_TOKEN, FITBIT_CLIENT_ID, FITBIT_CLIENT_SECRET, FITBIT_REFRESH_TOKEN
+from config import FITBIT_CLIENT_ID, FITBIT_CLIENT_SECRET
 class FitbitApi:
-    def __init__(self):
+    def __init__(self, access_token, refresh_token):
         self.__auth_client = fitbit.Fitbit(FITBIT_CLIENT_ID, FITBIT_CLIENT_SECRET, oauth2=True,
-                                        access_token=FITBIT_ACCESS_TOKEN,
-                                        refresh_token=FITBIT_REFRESH_TOKEN)
+                                        access_token=access_token,
+                                        refresh_token=refresh_token)
 
     def get_steps_done_today(self):
         today = str(datetime.datetime.now().strftime("%Y-%m-%d"))

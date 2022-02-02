@@ -3,3 +3,6 @@ config.py
 __pycache__/
 .idea/
 .ipynb_checkpoints
+fbadmin.json
+fbconfig.json
+.env
