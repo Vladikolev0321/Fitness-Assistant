@@ -18,7 +18,7 @@ class _HomePageState extends State<HomePage> {
     // Text(
     //   'Index 0: Dashboard',
     // ),
-    DashBoard(),
+    Dashboard(),
     ChatBody(),
   ];
 
@@ -34,11 +34,7 @@ class _HomePageState extends State<HomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: Center(
-        child: TextButton(child: Text(user.email), onPressed: (){
-          final provider = Provider.of<GoogleSignInProvider>(context, listen:false);
-          provider.logout();
-        },)
-        //_widgetOptions.elementAt(_selectedIndex),
+         child:  _widgetOptions.elementAt(_selectedIndex),
 
       ),
       
