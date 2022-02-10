@@ -54,20 +54,20 @@ class StravaApi:
         
         ride_distance = int(rides['distance'].sum()/1000)
         run_distance = int(runs['distance'].sum()/1000)
-        walk_ditance = int(walks['distance'].sum()/1000)
+        walk_distance = int(walks['distance'].sum()/1000)
         hikes_distance = int(hikes['distance'].sum()/1000)
         
-        return {'ride_distance':ride_distance, 'run_distance':run_distance, 'walk_ditance':walk_ditance, 'hikes_distance':hikes_distance}
+        return {'ride_distance':ride_distance, 'run_distance':run_distance, 'walk_distance':walk_distance, 'hike_distance':hikes_distance}
     
     def get_percentage_distance_for_all_activities(self):
         distances = self.get_distances_for_all_activities()
         
-        sum_distances = distances['ride_distance'] + distances['run_distance'] + distances['walk_ditance'] + distances['hikes_distance']
+        sum_distances = distances['ride_distance'] + distances['run_distance'] + distances['walk_distance'] + distances['hike_distance']
 
         return {'ride_distance_percentage':self.__percentage_from_whole(distances['ride_distance'], sum_distances),
          'run_distance_percentage':self.__percentage_from_whole(distances['run_distance'], sum_distances),
-          'walk_distance_percentage':self.__percentage_from_whole(distances['walk_ditance'], sum_distances),
-           'hike_distance_percentage':self.__percentage_from_whole(distances['hikes_distance'], sum_distances)}
+          'walk_distance_percentage':self.__percentage_from_whole(distances['walk_distance'], sum_distances),
+           'hike_distance_percentage':self.__percentage_from_whole(distances['hike_distance'], sum_distances)}
 
 
 
