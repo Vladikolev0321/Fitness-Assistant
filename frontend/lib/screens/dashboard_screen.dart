@@ -29,80 +29,84 @@ class _DashboardState extends State<Dashboard> {
   int _rideDistance = 0;
   int _walkDistance = 0;
   int _hikeDistance = 0;
+  bool _isLoading = false;
 
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
-        padding: const EdgeInsets.all(15.0),
-        child: Column(
-          children: <Widget>[
-            ActivityPieChart(
-                runSection: _runPercentage,
-                rideSection: _ridePercentage,
-                walkSection: _walkPercentage,
-                hikeSection: _hikePercentage,
-                runDistance: _runDistance,
-                rideDistance: _rideDistance,
-                walkDistance: _walkDistance,
-                hikeDistance: _hikeDistance,),
-            const SizedBox(height: 10.0),
-            Column(
+    return _isLoading
+        ? Center(child: CircularProgressIndicator())
+        : SingleChildScrollView(
+            padding: const EdgeInsets.all(15.0),
+            child: Column(
               children: <Widget>[
-                Container(
-                  height: 100,
-                 // color: Colors.blue,
-                  child: Card(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: <Widget>[
-                        ListTile(
-                          title: Text(
-                            _stepsCount.toString(),
-                          ),
-                          trailing: Icon(
-                            FontAwesomeIcons.walking,
-                            color: Colors.black,
-                          ),
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.only(left: 16.0),
-                          child: Text(
-                            'Steps',
-                          ),
-                        )
-                      ],
-                    ),
-                  ),
+                ActivityPieChart(
+                  runSection: _runPercentage,
+                  rideSection: _ridePercentage,
+                  walkSection: _walkPercentage,
+                  hikeSection: _hikePercentage,
+                  runDistance: _runDistance,
+                  rideDistance: _rideDistance,
+                  walkDistance: _walkDistance,
+                  hikeDistance: _hikeDistance,
                 ),
                 const SizedBox(height: 10.0),
-                Container(
-                  height: 100,
-                 // color: Colors.red,
-                  child: Card(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: <Widget>[
-                        ListTile(
-                          title: Text(_caloriesBurned.toString()),
-                          trailing: Icon(
-                            FontAwesomeIcons.fire,
-                            color: Colors.red,
-                          ),
+                Column(
+                  children: <Widget>[
+                    Container(
+                      height: 100,
+                      // color: Colors.blue,
+                      child: Card(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: <Widget>[
+                            ListTile(
+                              title: Text(
+                                _stepsCount.toString(),
+                              ),
+                              trailing: Icon(
+                                FontAwesomeIcons.walking,
+                                color: Colors.black,
+                              ),
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.only(left: 16.0),
+                              child: Text(
+                                'Steps',
+                              ),
+                            )
+                          ],
                         ),
-                        Padding(
-                          padding: const EdgeInsets.only(left: 16.0),
-                          child: Text(
-                            'Calories Burned',
-                          ),
-                        )
-                      ],
+                      ),
                     ),
-                  ),
+                    const SizedBox(height: 10.0),
+                    Container(
+                      height: 100,
+                      // color: Colors.red,
+                      child: Card(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: <Widget>[
+                            ListTile(
+                              title: Text(_caloriesBurned.toString()),
+                              trailing: Icon(
+                                FontAwesomeIcons.fire,
+                                color: Colors.red,
+                              ),
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.only(left: 16.0),
+                              child: Text(
+                                'Calories Burned',
+                              ),
+                            )
+                          ],
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
               ],
-            ),
-          ],
-        ));
+            ));
   }
 
   @override
@@ -112,9 +116,11 @@ class _DashboardState extends State<Dashboard> {
   }
 
   _getDashboardInfo() async {
+    setState(() {
+      _isLoading = true;
+    });
     Map<String, dynamic> data;
-    final response =
-        await Provider.of<FitnessInfoProvider>(context, listen: false)
+      await Provider.of<FitnessInfoProvider>(context, listen: false)
             .getDashboardInfo()
             .then((response) {
       data = jsonDecode(response.body);
@@ -131,7 +137,7 @@ class _DashboardState extends State<Dashboard> {
       _rideDistance = data['distances']['ride_distance'];
       _walkDistance = data['distances']['walk_distance'];
       _hikeDistance = data['distances']['hike_distance'];
-
+      _isLoading = false;
     });
   }
 }
