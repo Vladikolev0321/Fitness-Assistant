@@ -66,7 +66,6 @@ class _LoggedInPageState extends State<LoggedInPage> {
                 clientSecret: fitbitClientSecret,
                 redirectUri: fitbitRedirectUrl,
                 callbackUrlScheme: "com.example.frontend");
-                print(userId);
 
                // Fitbit
 

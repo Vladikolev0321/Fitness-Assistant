@@ -24,7 +24,7 @@ class WelcomeScreen extends StatelessWidget {
           if(snapshot.connectionState == ConnectionState.waiting){
             return Center(child: CircularProgressIndicator(),);
           } else if(snapshot.hasData){
-            return LoggedInPage();
+            return HomePage();
           } else if(snapshot.hasError){
             return Center(child: Text("Something went wrong"),);
           } else{
