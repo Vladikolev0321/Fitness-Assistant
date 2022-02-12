@@ -76,6 +76,23 @@ def get_avg_speed():
     strava_api = StravaApi(data['stravaRefreshToken'])
     return str(strava_api.get_average_speed_for_type_activity("Walk"))
 
+@app.route('/dashboard', methods=["GET"])
+@check_token
+def get_dashboard_info():
+    data = request.headers
+    fitbit_api = FitbitApi(data['fitbitAccessToken'], data['fitbitRefreshToken'])
+    strava_api = StravaApi(data['stravaRefreshToken'])
+    steps_today = fitbit_api.get_steps_done_today()
+    burnt_calories = fitbit_api.get_calories_burned_today()
+    weight = fitbit_api.get_last_logged_weight()
+    distances = strava_api.get_distances_for_all_activities()
+    percentages = strava_api.get_percentage_distance_for_all_activities()
+
+    return jsonify({"steps":str(steps_today), "burnt_calories":str(burnt_calories),
+            "distances":distances, "percentages":percentages, "weight":weight})
+
+
+
 @app.route('/register', methods=["POST"])
 @check_token
 def register():

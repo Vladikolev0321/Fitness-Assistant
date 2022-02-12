@@ -46,6 +46,34 @@ class StravaApi:
         elif percent_change > 0:
             return f"Your last activity distance is more by {percent_change}% from the max"
 
+    def get_distances_for_all_activities(self):
+        rides = self.dataset.loc[self.dataset['type'] == 'Ride']
+        runs = self.dataset.loc[self.dataset['type'] == 'Run']
+        walks = self.dataset.loc[self.dataset['type'] == 'Walk']
+        hikes = self.dataset.loc[self.dataset['type'] == 'Hike']
+        
+        ride_distance = int(rides['distance'].sum()/1000)
+        run_distance = int(runs['distance'].sum()/1000)
+        walk_distance = int(walks['distance'].sum()/1000)
+        hikes_distance = int(hikes['distance'].sum()/1000)
+        
+        return {'ride_distance':ride_distance, 'run_distance':run_distance, 'walk_distance':walk_distance, 'hike_distance':hikes_distance}
+    
+    def get_percentage_distance_for_all_activities(self):
+        distances = self.get_distances_for_all_activities()
+        
+        sum_distances = distances['ride_distance'] + distances['run_distance'] + distances['walk_distance'] + distances['hike_distance']
+
+        return {'ride_distance_percentage':self.__percentage_from_whole(distances['ride_distance'], sum_distances),
+         'run_distance_percentage':self.__percentage_from_whole(distances['run_distance'], sum_distances),
+          'walk_distance_percentage':self.__percentage_from_whole(distances['walk_distance'], sum_distances),
+           'hike_distance_percentage':self.__percentage_from_whole(distances['hike_distance'], sum_distances)}
+
+
+
+    def __percentage_from_whole(self, part, whole):
+        percentage = 100 * float(part)/float(whole)
+        return percentage 
 
     def __get_percent_change(self, current, previous):
         # add a check

@@ -17,3 +17,7 @@ class FitbitApi:
         activities = self.__auth_client.activities(date=today)
         return activities['summary']['caloriesOut']
     
+    def get_last_logged_weight(self):
+        weight = self.__auth_client.get_bodyweight(period="1m")
+        weight = weight['weight'][-1]['weight'] * 0.453592 # transfer from lbs to kg
+        return weight

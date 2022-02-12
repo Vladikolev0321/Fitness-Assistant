@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:frontend/providers/fitness_api.dart';
 import 'package:frontend/screens/welcome_screen.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:provider/provider.dart';
@@ -13,13 +14,16 @@ Future<void> main() async {
 class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider(
-      create: (context) => GoogleSignInProvider(),
-      child: MaterialApp(
-        debugShowCheckedModeBanner: false,
-        title: "Fitness Assistant",
-        home: WelcomeScreen()
-      ),
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider<GoogleSignInProvider>(create: (context) => GoogleSignInProvider()),
+        Provider<FitnessInfoProvider>(create: (context) => FitnessInfoProvider())
+      ],
+        child: MaterialApp(
+          debugShowCheckedModeBanner: false,
+          title: "Fitness Assistant",
+          home: WelcomeScreen()
+        ),
     );
   }
 }
