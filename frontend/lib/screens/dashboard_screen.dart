@@ -29,6 +29,7 @@ class _DashboardState extends State<Dashboard> {
   int _rideDistance = 0;
   int _walkDistance = 0;
   int _hikeDistance = 0;
+  double _weight = 0;
   bool _isLoading = false;
 
   @override
@@ -54,7 +55,6 @@ class _DashboardState extends State<Dashboard> {
                   children: <Widget>[
                     Container(
                       height: 100,
-                      // color: Colors.blue,
                       child: Card(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -81,7 +81,6 @@ class _DashboardState extends State<Dashboard> {
                     const SizedBox(height: 10.0),
                     Container(
                       height: 100,
-                      // color: Colors.red,
                       child: Card(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -97,6 +96,30 @@ class _DashboardState extends State<Dashboard> {
                               padding: const EdgeInsets.only(left: 16.0),
                               child: Text(
                                 'Calories Burned',
+                              ),
+                            )
+                          ],
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 10.0),
+                    Container(
+                      height: 100,
+                      child: Card(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: <Widget>[
+                            ListTile(
+                              title: Text(_weight.toString()),
+                              trailing: Icon(
+                                FontAwesomeIcons.weight,
+                                color: Colors.blue,
+                              ),
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.only(left: 16.0),
+                              child: Text(
+                                'Current weight',
                               ),
                             )
                           ],
@@ -137,6 +160,7 @@ class _DashboardState extends State<Dashboard> {
       _rideDistance = data['distances']['ride_distance'];
       _walkDistance = data['distances']['walk_distance'];
       _hikeDistance = data['distances']['hike_distance'];
+      _weight = double.parse(data['weight'].toStringAsFixed(2));
       _isLoading = false;
     });
   }
