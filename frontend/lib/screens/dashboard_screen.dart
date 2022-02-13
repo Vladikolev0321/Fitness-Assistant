@@ -138,7 +138,7 @@ class _DashboardState extends State<Dashboard> {
     _getDashboardInfo();
   }
 
-  _getDashboardInfo() async {
+  void _getDashboardInfo() async {
     setState(() {
       _isLoading = true;
     });
