@@ -15,20 +15,20 @@ import 'package:flutter_web_auth/flutter_web_auth.dart';
 
 import '../secret.dart';
 
-class LoggedInPage extends StatefulWidget {
+class ConnectToApisScreen extends StatefulWidget {
   final user = FirebaseAuth.instance.currentUser;
   final Function setSeen;
 
-  LoggedInPage({
+  ConnectToApisScreen({
     Key key,
      this.setSeen }) : super(key: key);
     
 
   @override
-  _LoggedInPageState createState() => _LoggedInPageState();
+  _ConnectToApisScreenState createState() => _ConnectToApisScreenState();
 }
 
-class _LoggedInPageState extends State<LoggedInPage> {
+class _ConnectToApisScreenState extends State<ConnectToApisScreen> {
 
 
   @override
@@ -99,6 +99,8 @@ class _LoggedInPageState extends State<LoggedInPage> {
           if(stravaAccessToken != null && stravaRefreshToken != null && fitbitAccessToken != null && fitbitRefreshToken != null){
             prefs.setBool('seen', true);
             widget.setSeen();
+          } else {
+            showAlert(context);
           }
         },
       )
@@ -109,3 +111,25 @@ class _LoggedInPageState extends State<LoggedInPage> {
   );
   }
 }
+
+showAlert(BuildContext context) {  
+  AlertDialog alert = AlertDialog(  
+    title: Text("Connection to APIs alert"),  
+    content: Text("Connect to APIs before proceeding"),  
+    actions: [  
+      TextButton(  
+      child: Text("OK"),  
+      onPressed: () {  
+        Navigator.of(context).pop();  
+      },  
+      )
+    ] 
+  );  
+
+  showDialog(  
+    context: context,  
+    builder: (BuildContext context) {  
+      return alert;  
+    },  
+  );  
+}  
