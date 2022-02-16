@@ -9,7 +9,7 @@ import 'package:flutter_signin_button/flutter_signin_button.dart';
 import 'package:frontend/providers/google_sign_in.dart';
 
 import '../secret.dart';
-import 'logged_in_screen.dart';
+import 'connect_to_apis_screen.dart';
 import 'home_screen.dart';
 
 class WelcomeScreen extends StatefulWidget {
@@ -43,7 +43,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
             } else if (snapshot.hasData) {
               return _seen
                   ? HomePage()
-                  : LoggedInPage(
+                  : ConnectToApisScreen(
                       setSeen: () {
                         setState(() {
                           _seen = true;
