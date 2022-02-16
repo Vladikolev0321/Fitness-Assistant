@@ -1,6 +1,8 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:frontend/screens/chat_screen.dart';
+import 'package:frontend/screens/user_screen.dart';
 import 'package:provider/provider.dart';
 import 'dashboard_screen.dart';
 import 'package:frontend/providers/google_sign_in.dart';
@@ -15,11 +17,9 @@ class HomePage extends StatefulWidget {
 class _HomePageState extends State<HomePage> {
   int _selectedIndex = 0;
   static const List<Widget> _widgetOptions = <Widget>[
-    // Text(
-    //   'Index 0: Dashboard',
-    // ),
     Dashboard(),
     ChatBody(),
+    UserScreen()
   ];
 
   void _onItemTapped(int index) {
@@ -27,8 +27,6 @@ class _HomePageState extends State<HomePage> {
       _selectedIndex = index;
     });
   }
-
-  final user = FirebaseAuth.instance.currentUser;
 
   @override
   Widget build(BuildContext context) {
@@ -47,6 +45,10 @@ class _HomePageState extends State<HomePage> {
       BottomNavigationBarItem(
         icon: Icon(Icons.chat),
         label: 'Chat',
+      ),
+      BottomNavigationBarItem(
+        icon: Icon(FontAwesomeIcons.user),
+        label: 'Profile',
       ),
     ],
     currentIndex: _selectedIndex,
