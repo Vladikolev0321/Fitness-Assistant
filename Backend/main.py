@@ -97,7 +97,6 @@ def get_dashboard_info():
 @check_token
 def register():
     if not Profile.query.filter_by(name=request.user['name']):
-
         entry = Profile(request.user['name'])
         db.session.add(entry)
         db.session.commit()
@@ -111,12 +110,14 @@ def get_steps():
     return str(fitness_assistant.get_steps_done_today())
 
 @app.route('/bot/message', methods=["POST"])
+@check_token
 def message_bot():
-    #return "Hello"
-    dummyChat = DummyChat(fitness_assistant)
-    #print(request.get_json())
+    data = request.headers
+    fitbit_api = FitbitApi(data['fitbitAccessToken'], data['fitbitRefreshToken'])
+    strava_api = StravaApi(data['stravaRefreshToken'])
+    dummyChat = DummyChat()
     message = request.get_json()['message']
-    response = dummyChat.accept_message(message)
+    response = dummyChat.accept_message(fitbit_api, strava_api, message)
     return jsonify({"response":str(response)})
 
 @app.route('/bot', methods=["POST"])
