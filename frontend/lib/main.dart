@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:frontend/providers/fitness_api.dart';
+import 'package:frontend/providers/messages.dart';
 import 'package:frontend/providers/strava_fitbit.dart';
 import 'package:frontend/screens/welcome_screen.dart';
 import 'package:firebase_core/firebase_core.dart';
@@ -25,7 +26,11 @@ class MyApp extends StatelessWidget {
         Provider<StravaFitbitProvider>(create: (context) => StravaFitbitProvider()),
         ProxyProvider<StravaFitbitProvider, FitnessInfoProvider>(
           update: (context, stravaFitbit, _) => FitnessInfoProvider(stravaFitbit),
-          )
+        ),
+        ProxyProvider<StravaFitbitProvider, Messages>(
+          update: (context, stravaFitbit, _) => Messages(stravaFitbit),
+        ),
+
       ],
         child: MaterialApp(
           debugShowCheckedModeBanner: false,
