@@ -36,100 +36,104 @@ class _DashboardState extends State<Dashboard> {
   Widget build(BuildContext context) {
     return _isLoading
         ? Center(child: CircularProgressIndicator())
-        : SingleChildScrollView(
-            padding: const EdgeInsets.all(15.0),
-            child: Column(
-              children: <Widget>[
-                ActivityPieChart(
-                  runSection: _runPercentage,
-                  rideSection: _ridePercentage,
-                  walkSection: _walkPercentage,
-                  hikeSection: _hikePercentage,
-                  runDistance: _runDistance,
-                  rideDistance: _rideDistance,
-                  walkDistance: _walkDistance,
-                  hikeDistance: _hikeDistance,
-                ),
-                const SizedBox(height: 10.0),
-                Column(
-                  children: <Widget>[
-                    Container(
-                      height: 100,
-                      child: Card(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: <Widget>[
-                            ListTile(
-                              title: Text(
-                                _stepsCount.toString(),
+        : RefreshIndicator(
+          onRefresh: _getDashboardInfo,
+          child: SingleChildScrollView(
+              padding: const EdgeInsets.all(15.0),
+              child: Column(
+                children: <Widget>[
+                  ActivityPieChart(
+                    runSection: _runPercentage,
+                    rideSection: _ridePercentage,
+                    walkSection: _walkPercentage,
+                    hikeSection: _hikePercentage,
+                    runDistance: _runDistance,
+                    rideDistance: _rideDistance,
+                    walkDistance: _walkDistance,
+                    hikeDistance: _hikeDistance,
+                  ),
+                  const SizedBox(height: 10.0),
+                  Column(
+                    children: <Widget>[
+                      Container(
+                        height: 100,
+                        child: Card(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: <Widget>[
+                              ListTile(
+                                title: Text(
+                                  _stepsCount.toString(),
+                                ),
+                                trailing: Icon(
+                                  FontAwesomeIcons.walking,
+                                  color: Colors.black,
+                                ),
                               ),
-                              trailing: Icon(
-                                FontAwesomeIcons.walking,
-                                color: Colors.black,
-                              ),
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.only(left: 16.0),
-                              child: Text(
-                                'Steps',
-                              ),
-                            )
-                          ],
+                              Padding(
+                                padding: const EdgeInsets.only(left: 16.0),
+                                child: Text(
+                                  'Steps',
+                                ),
+                              )
+                            ],
+                          ),
                         ),
                       ),
-                    ),
-                    const SizedBox(height: 10.0),
-                    Container(
-                      height: 100,
-                      child: Card(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: <Widget>[
-                            ListTile(
-                              title: Text(_caloriesBurned.toString()),
-                              trailing: Icon(
-                                FontAwesomeIcons.fire,
-                                color: Colors.red,
+                      const SizedBox(height: 10.0),
+                      Container(
+                        height: 100,
+                        child: Card(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: <Widget>[
+                              ListTile(
+                                title: Text(_caloriesBurned.toString()),
+                                trailing: Icon(
+                                  FontAwesomeIcons.fire,
+                                  color: Colors.red,
+                                ),
                               ),
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.only(left: 16.0),
-                              child: Text(
-                                'Calories Burned',
-                              ),
-                            )
-                          ],
+                              Padding(
+                                padding: const EdgeInsets.only(left: 16.0),
+                                child: Text(
+                                  'Calories Burned',
+                                ),
+                              )
+                            ],
+                          ),
                         ),
                       ),
-                    ),
-                    const SizedBox(height: 10.0),
-                    Container(
-                      height: 100,
-                      child: Card(
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: <Widget>[
-                            ListTile(
-                              title: Text(_weight.toString()),
-                              trailing: Icon(
-                                FontAwesomeIcons.weight,
-                                color: Colors.blue,
+                      const SizedBox(height: 10.0),
+                      Container(
+                        height: 100,
+                        child: Card(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: <Widget>[
+                              ListTile(
+                                title: Text(_weight.toString()),
+                                trailing: Icon(
+                                  FontAwesomeIcons.weight,
+                                  color: Colors.blue,
+                                ),
                               ),
-                            ),
-                            Padding(
-                              padding: const EdgeInsets.only(left: 16.0),
-                              child: Text(
-                                'Current weight',
-                              ),
-                            )
-                          ],
+                              Padding(
+                                padding: const EdgeInsets.only(left: 16.0),
+                                child: Text(
+                                  'Current weight',
+                                ),
+                              )
+                            ],
+                          ),
                         ),
                       ),
-                    ),
-                  ],
-                ),
-              ],
-            ));
+                      
+                    ],
+                  ),
+                ],
+              )),
+        );
   }
 
   @override
@@ -138,7 +142,7 @@ class _DashboardState extends State<Dashboard> {
     _getDashboardInfo();
   }
 
-  void _getDashboardInfo() async {
+  Future<void> _getDashboardInfo() async {
     setState(() {
       _isLoading = true;
     });
