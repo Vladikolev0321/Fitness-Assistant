@@ -4,8 +4,10 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:frontend/global.dart';
 import 'package:frontend/models/chat_message.dart';
+import 'package:frontend/providers/messages.dart';
 import 'package:frontend/widgets/message.dart';
 import 'package:http/http.dart' as http;
+import 'package:provider/provider.dart';
 
 class ChatBody extends StatefulWidget {
   const ChatBody({ Key key }) : super(key: key);
@@ -74,7 +76,6 @@ class ChatInputField extends StatelessWidget {
   ChatInputField({Key key, this.notifyParent}) : super(key: key);
   
   TextEditingController _messageController = TextEditingController();
-  static const String BOT_URL = "http://127.0.0.1:5000/bot/message";
 
   @override
   Widget build(BuildContext context) {
@@ -115,7 +116,7 @@ class ChatInputField extends StatelessWidget {
                           border: InputBorder.none,
                         ),
                         onSubmitted: (msg){
-                          this.getResponse();
+                          this.getResponse(context);
                         },
                         controller: _messageController,
                       ),
@@ -131,33 +132,17 @@ class ChatInputField extends StatelessWidget {
   }
 
 
-  void getResponse() {
+  Future<void> getResponse(BuildContext context) async {
     String text = _messageController.text;
     if(text.length > 0){
       _messageController.text = "";
       this.notifyParent(text, true);
-      var client = getClient();
-    try{
-      client.post(
-        Uri.parse(BOT_URL),
-        headers: {"Content-Type": "application/json"},
-        body: json.encode({"message": text}),
-      ).then((response){
-        print(response.body);
-        Map<String, dynamic> data = jsonDecode(response.body);
-        this.notifyParent(data['response'], false);
-      
-      });
+      String response = await Provider.of<Messages>(context, listen: false).message(text);
+      print(response);
+      if(response != null){
+        this.notifyParent(response.toString(), false);
+      }
     }
-    finally{
-      client.close();
-    }
-    }
-  }
-
-  // creating a client
-  http.Client getClient(){
-    return http.Client();
   }
 
 }
