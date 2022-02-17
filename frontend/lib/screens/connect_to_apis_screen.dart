@@ -5,9 +5,11 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:fitbitter/fitbitter.dart';
 import 'package:flutter/material.dart';
 import 'package:frontend/google_sign_in_api.dart';
+import 'package:frontend/providers/strava_fitbit.dart';
 import 'package:frontend/screens/home_screen.dart';
 import 'package:frontend/screens/welcome_screen.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:strava_flutter/strava.dart';
 import 'package:http/http.dart' as http;
@@ -61,42 +63,22 @@ class _ConnectToApisScreenState extends State<ConnectToApisScreen> {
            TextButton(
              child: Text("Connect to Fitbit"),
              onPressed: () async {
-              String userId = await FitbitConnector.authorize(
-                context: context,
-                clientID: fitbitOauth,
-                clientSecret: fitbitClientSecret,
-                redirectUri: fitbitRedirectUrl,
-                callbackUrlScheme: "com.example.frontend");
-
-               // Fitbit
-
-                // print(GetIt.instance<SharedPreferences>().getString("fitbitAccessToken"));
-                // print(GetIt.instance<SharedPreferences>().getString("fitbitRefreshToken"));
-                
-                
-                SharedPreferences prefs = await SharedPreferences.getInstance();
-                String fitbitAccessToken = prefs.getString("fitbitAccessToken");
-                String fitbitRefreshToken = prefs.getString("fitbitRefreshToken");
-                print(fitbitAccessToken);
-                print(fitbitRefreshToken);
+              await Provider.of<StravaFitbitProvider>(context, listen: false).connectToFitbit(context);
             },
           ),
           TextButton(
           child: Text("Connect to Strava"),
           onPressed: () async {
-            Strava strava = new Strava(true, stravaSecret);
-            strava.oauth(stravaClientId, "activity:read_all", stravaSecret, "auto");
+            await Provider.of<StravaFitbitProvider>(context, listen: false).connectToStrava();
         },
       ),
       TextButton(
         child: Text("Continue"),
         onPressed: () async{
           SharedPreferences prefs = await SharedPreferences.getInstance();
-          final String stravaAccessToken = prefs.getString("strava_accessToken");
-          final String stravaRefreshToken = prefs.getString("strava_refreshToken");
-          final String fitbitAccessToken = prefs.getString("fitbitAccessToken");
-          final String fitbitRefreshToken = prefs.getString("fitbitRefreshToken");
-          if(stravaAccessToken != null && stravaRefreshToken != null && fitbitAccessToken != null && fitbitRefreshToken != null){
+          final strava_tokens = await Provider.of<StravaFitbitProvider>(context, listen: false).getStravaTokens();
+          final fitbit_tokens = await Provider.of<StravaFitbitProvider>(context, listen: false).getFitbitTokens();
+          if(strava_tokens['stravaAccessToken'] != null && strava_tokens['stravaRefreshToken'] != null && fitbit_tokens['fitbitAccessToken'] != null && fitbit_tokens['fitbitRefreshToken'] != null){
             prefs.setBool('seen', true);
             widget.setSeen();
           } else {
