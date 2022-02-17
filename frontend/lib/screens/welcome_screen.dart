@@ -1,14 +1,10 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
-//import 'package:fitbitter/fitbitter.dart';
-import 'package:frontend/google_sign_in_api.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:strava_flutter/strava.dart';
 import 'package:flutter_signin_button/flutter_signin_button.dart';
 import 'package:frontend/providers/google_sign_in.dart';
 
-import '../secret.dart';
 import 'connect_to_apis_screen.dart';
 import 'home_screen.dart';
 

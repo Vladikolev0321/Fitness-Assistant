@@ -1,11 +1,8 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:frontend/screens/chat_screen.dart';
 import 'package:frontend/screens/user_screen.dart';
-import 'package:provider/provider.dart';
 import 'dashboard_screen.dart';
-import 'package:frontend/providers/google_sign_in.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({ Key key }) : super(key: key);

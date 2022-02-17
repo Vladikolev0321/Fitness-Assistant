@@ -1,15 +1,9 @@
 import 'dart:convert';
-import 'package:firebase_auth/firebase_auth.dart';
-import 'package:fitbitter/fitbitter.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:frontend/providers/fitness_api.dart';
-import 'package:frontend/providers/google_sign_in.dart';
-import 'package:frontend/secret.dart';
 import 'package:frontend/widgets/pie_chart.dart';
-import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class Dashboard extends StatefulWidget {
   const Dashboard({Key key}) : super(key: key);

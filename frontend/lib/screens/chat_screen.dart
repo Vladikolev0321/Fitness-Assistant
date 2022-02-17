@@ -1,12 +1,9 @@
 import 'dart:async';
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:frontend/global.dart';
 import 'package:frontend/models/chat_message.dart';
 import 'package:frontend/providers/messages.dart';
 import 'package:frontend/widgets/message.dart';
-import 'package:http/http.dart' as http;
 import 'package:provider/provider.dart';
 
 class ChatBody extends StatefulWidget {

@@ -1,21 +1,11 @@
-import 'dart:convert';
-import 'dart:io';
-
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:fitbitter/fitbitter.dart';
 import 'package:flutter/material.dart';
 import 'package:frontend/google_sign_in_api.dart';
 import 'package:frontend/providers/strava_fitbit.dart';
-import 'package:frontend/screens/home_screen.dart';
 import 'package:frontend/screens/welcome_screen.dart';
-import 'package:google_sign_in/google_sign_in.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-import 'package:strava_flutter/strava.dart';
-import 'package:http/http.dart' as http;
-import 'package:flutter_web_auth/flutter_web_auth.dart';
 
-import '../secret.dart';
 
 class ConnectToApisScreen extends StatefulWidget {
   final user = FirebaseAuth.instance.currentUser;
