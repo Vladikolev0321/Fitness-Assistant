@@ -22,7 +22,7 @@ class BotResponseHandler:
                     if entity in ["hike", "hiking"]:
                         return f"For hiking activity your average speed is {strava_api.get_average_speed_for_type_activity('Hike')} km/h"
                     if entity in ["run", "running"]:
-                        return f"For hiking activity your average speed is {strava_api.get_average_speed_for_type_activity('Run')} km/h"
+                        return f"For running activity your average speed is {strava_api.get_average_speed_for_type_activity('Run')} km/h"
                     if entity in ["cycle", "cycling"]:
                         return f"For cycling activity your average speed is {strava_api.get_average_speed_for_type_activity('Ride')} km/h"
                     return "Invalid activity"
@@ -38,11 +38,11 @@ class BotResponseHandler:
                 if len(data['entities']) == 1:
                     entity = data['entities'][0]['value'].lower()
                     if entity in ["today"]:
-                        return f"Today you have burnt {fitbit_api.get_calories_burned_today()} steps"
+                        return f"Today you have burnt {fitbit_api.get_calories_burned_today()} calories"
                     return  "Invalid time range"
                 return "You are not specifying time range"
             if predicted_intent == "logged_weight":
-                return f"Last time you logged your weight you was {fitbit_api.get_last_logged_weight} kg"
+                return f"Last time you logged your weight you was {fitbit_api.get_last_logged_weight()} kg"
             if predicted_intent == "distance_activity":
                 return "You can check this info in the dashboard"
             if predicted_intent == "bot_purpose":
@@ -60,13 +60,13 @@ class BotResponseHandler:
                 if len(data['entities']) == 1:
                     entity = data['entities'][0]['value'].lower()
                     if entity in ["walk", "walking"]:
-                        return fitbit_api.get_distance_made_change_in_percents("Walk")
+                        return strava_api.get_distance_made_change_in_percents("Walk")
                     if entity in ["hike", "hiking"]:
-                        return fitbit_api.get_distance_made_change_in_percents("Hike")
-                    if entity in ["run", "runing"]:
-                        return fitbit_api.get_distance_made_change_in_percents("Run")
+                        return strava_api.get_distance_made_change_in_percents("Hike")
+                    if entity in ["run", "running"]:
+                        return strava_api.get_distance_made_change_in_percents("Run")
                     if entity in ["cycle", "cycling"]:
-                        return fitbit_api.get_distance_made_change_in_percents("Ride")
+                        return strava_api.get_distance_made_change_in_percents("Ride")
                     return "Invalid activity"
                 return "You are not specifying for what type of activity you want information"
         else:
