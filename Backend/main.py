@@ -1,6 +1,8 @@
 from functools import wraps
 from flask import Flask, request, jsonify
 import requests
+from bot_api import BotApi
+from bot_response_handler import BotResponseHandler
 from dummy_chat_controller import DummyChat
 from fitbit_api import FitbitApi
 from fitness_assistant import FitnessAssistant
@@ -22,6 +24,8 @@ app.config['SQLALCHEMY_DATABASE_URI'] = SQLALCHEMY_DATABASE_URI
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db = SQLAlchemy(app)
+bot_api = BotApi()
+bot_response_handler = BotResponseHandler()
 
 
 class Profile(db.Model):
@@ -115,9 +119,8 @@ def message_bot():
     data = request.headers
     fitbit_api = FitbitApi(data['fitbitAccessToken'], data['fitbitRefreshToken'])
     strava_api = StravaApi(data['stravaRefreshToken'])
-    dummyChat = DummyChat()
     message = request.get_json()['message']
-    response = dummyChat.accept_message(fitbit_api, strava_api, message)
+    response = bot_response_handler.process_bot_response(bot_api.get_response(message), fitbit_api, strava_api)
     return jsonify({"response":str(response)})
 
 @app.route('/bot', methods=["POST"])
