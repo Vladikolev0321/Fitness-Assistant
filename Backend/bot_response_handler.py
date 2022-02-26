@@ -2,7 +2,7 @@ import random
 
 
 class BotResponseHandler:
-    def process_bot_response(self, data):
+    def process_bot_response(self, data, fitbit_api, strava_api):
         prediction_confidence = data['intent']['confidence']
         if prediction_confidence > 0.75:
             predicted_intent = data['intent']['name']
@@ -18,39 +18,35 @@ class BotResponseHandler:
                 if len(data['entities']) == 1:#
                     entity = data['entities'][0]['value'].lower()
                     if entity in ["walk", "walking"]:
-                        pass
+                        return f"For walking activity your average speed is {strava_api.get_average_speed_for_type_activity('Walk')} km/h"
                     if entity in ["hike", "hiking"]:
-                        pass
-                    if entity in ["run", "runing"]:
-                        pass
+                        return f"For hiking activity your average speed is {strava_api.get_average_speed_for_type_activity('Hike')} km/h"
+                    if entity in ["run", "running"]:
+                        return f"For hiking activity your average speed is {strava_api.get_average_speed_for_type_activity('Run')} km/h"
                     if entity in ["cycle", "cycling"]:
-                        pass
-                    # else
-                    # Can't understand - Average speed for what type of activity
-                pass # Can't understand
+                        return f"For cycling activity your average speed is {strava_api.get_average_speed_for_type_activity('Ride')} km/h"
+                    return "Invalid activity"
+                return "Average speed for what type of activity?"
             if predicted_intent == "steps_done":
                 if len(data['entities']) == 1:
                     entity = data['entities'][0]['value'].lower()
                     if entity in ["today"]:
-                        pass
-                    # Can't understand - You are not specifying the time range
-                pass
+                        return f"Today you have done {fitbit_api.get_steps_done_today()} steps"
+                    return  "Invalid time range"
+                return "You are not specifying time range"
             if predicted_intent == "calories_burned":
                 if len(data['entities']) == 1:
                     entity = data['entities'][0]['value'].lower()
                     if entity in ["today"]:
-                        pass
-                    # Can't understand - You are not specifying the time range
-                pass
+                        return f"Today you have burnt {fitbit_api.get_calories_burned_today()} steps"
+                    return  "Invalid time range"
+                return "You are not specifying time range"
             if predicted_intent == "logged_weight":
-                # return last logged weight
-                pass
+                return f"Last time you logged your weight you was {fitbit_api.get_last_logged_weight} kg"
             if predicted_intent == "distance_activity":
-                # This info is contained in the dashboard
-                pass
+                return "You can check this info in the dashboard"
             if predicted_intent == "bot_purpose":
-                # My purpose is to inform you about your activity
-                pass
+                return "My purpose is to give you information about your activity"
             if predicted_intent == "calories_needed":
                 if len(data['entities']) == 1:
                     entity = data['entities'][0]['value'].lower()
@@ -58,19 +54,20 @@ class BotResponseHandler:
                         pass
                     if entity == "loose":
                         pass
-                    # Can't understand - You are not specifying if you want to loose or gain weight
-                pass
+                    return "You are not specifying if you want to loose or gain weight"
+                return "You are not specifying if you want to loose or gain weight"
             if predicted_intent == "change_in_performance":
                 if len(data['entities']) == 1:
                     entity = data['entities'][0]['value'].lower()
                     if entity in ["walk", "walking"]:
-                        pass
+                        return fitbit_api.get_distance_made_change_in_percents("Walk")
                     if entity in ["hike", "hiking"]:
-                        pass
+                        return fitbit_api.get_distance_made_change_in_percents("Hike")
                     if entity in ["run", "runing"]:
-                        pass
+                        return fitbit_api.get_distance_made_change_in_percents("Run")
                     if entity in ["cycle", "cycling"]:
-                        pass
-                    # Can't understand - You are not specifying for what type of activitty you want information
-                    
-                pass
+                        return fitbit_api.get_distance_made_change_in_percents("Ride")
+                    return "Invalid activity"
+                return "You are not specifying for what type of activity you want information"
+        else:
+            return "I didn't get that, try again."
