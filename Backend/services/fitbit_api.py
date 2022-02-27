@@ -21,3 +21,20 @@ class FitbitApi:
         weight = self.__auth_client.get_bodyweight(period="1m")
         weight = weight['weight'][-1]['weight'] * 0.453592 # transfer from lbs to kg
         return weight
+    
+    # https://www.omnicalculator.com/health/bmr
+    def get_bmr(self):
+        weight_in_lbs = self.__auth_client.user_profile_get()['user']['weight']
+        age = self.__auth_client.user_profile_get()['user']['age']
+        gender = self.__auth_client.user_profile_get()['user']['gender']
+        height_in_inches = self.__auth_client.user_profile_get()['user']['height']
+
+        weight_kg = weight_in_lbs / 2.2
+        heigh_cm = height_in_inches * 2.54
+        bmr = None
+        if gender == "MALE":
+            bmr = int((10 * weight_kg) + (6.25 * heigh_cm) - (5 * age) + 5)
+        elif gender == "FEMALE":
+            bmr = int((10 * weight_kg) + (6.25 * heigh_cm) - (5 * age) - 161)
+        return bmr
+        
