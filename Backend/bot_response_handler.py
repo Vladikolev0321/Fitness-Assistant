@@ -47,6 +47,8 @@ class BotResponseHandler:
                 return "You can check this info in the dashboard"
             if predicted_intent == "bot_purpose":
                 return "My purpose is to give you information about your activity"
+            if predicted_intent == "get_bmr":
+                return f"Your bmr is {fitbit_api.get_bmr()}"
             if predicted_intent == "calories_needed":
                 if len(data['entities']) == 1:
                     entity = data['entities'][0]['value'].lower()

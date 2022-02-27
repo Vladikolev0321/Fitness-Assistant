@@ -1,10 +1,10 @@
 from functools import wraps
 from flask import Flask, request, jsonify
 import requests
-from bot_api import BotApi
+from services.bot_api import BotApi
 from bot_response_handler import BotResponseHandler
 from dummy_chat_controller import DummyChat
-from fitbit_api import FitbitApi
+from services.fitbit_api import FitbitApi
 from fitness_assistant import FitnessAssistant
 from flask_cors import CORS
 import firebase_admin
@@ -14,7 +14,7 @@ from flask_sqlalchemy import SQLAlchemy
 #from dotenv import load_dotenv
 # to remove
 from config import FITBIT_ACCESS_TOKEN, FITBIT_CLIENT_ID, FITBIT_CLIENT_SECRET, FITBIT_REFRESH_TOKEN, SQLALCHEMY_DATABASE_URI
-from strava_api import StravaApi
+from services.strava_api import StravaApi
 
 
 

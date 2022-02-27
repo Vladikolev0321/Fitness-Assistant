@@ -1,5 +1,5 @@
-from fitbit_api import FitbitApi
-from strava_api import StravaApi
+from services.fitbit_api import FitbitApi
+from services.strava_api import StravaApi
 
 class FitnessAssistant:
     def __init__(self):
