@@ -32,9 +32,9 @@ class Message extends StatelessWidget {
               if(!message.isSender) ...[
                 CircleAvatar(
                   radius: 12,
-                  child: Image.asset('assets/baseline_smart_toy_black_36dp.png', color: Colors.white, ),
+                  child: Image.asset('assets/chatbot.png', color: Colors.white, ),
                 ),
-                SizedBox(width: messagePadding / 2,)
+                SizedBox(width: messagePadding / 3,)
               ],
               getMessageByType(message)
             ],
