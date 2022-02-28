@@ -21,4 +21,16 @@ class FitnessInfoProvider{
                            "fitbitAccessToken":fitbitTokens['fitbitAccessToken'],"fitbitRefreshToken":fitbitTokens['fitbitRefreshToken']});
       return response;
     }
+
+    Future<http.Response> getStepsInfo()async {
+       final idToken = await _user.getIdToken();
+      final stravaTokens = await _stravaFitbitProvider.getStravaTokens();
+      final fitbitTokens = await _stravaFitbitProvider.getFitbitTokens();
+
+      final http.Response response = await http.get(Uri.parse("$baseUrl/dashboard/steps_chart"),
+                           headers: {'Content-type': 'application/json', "Authorization":idToken,
+                          "stravaAccessToken":stravaTokens['stravaAccessToken'], "stravaRefreshToken":stravaTokens['stravaRefreshToken'],
+                           "fitbitAccessToken":fitbitTokens['fitbitAccessToken'],"fitbitRefreshToken":fitbitTokens['fitbitRefreshToken']});
+      return response;
+    }
 }
