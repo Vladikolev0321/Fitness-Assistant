@@ -37,4 +37,10 @@ class FitbitApi:
         elif gender == "FEMALE":
             bmr = int((10 * weight_kg) + (6.25 * heigh_cm) - (5 * age) - 161)
         return bmr
+    
+    def get_latest_seven_days_steps(self):
+        curr_date = datetime.datetime.now().strftime("%Y-%m-%d")
+        before_7_days_date = (datetime.datetime.now() - datetime.timedelta(days=7)).strftime("%Y-%m-%d")
+        steps = self.__auth_client.time_series("activities/steps", base_date=before_7_days_date, end_date=curr_date)["activities-steps"]
+        return steps
         

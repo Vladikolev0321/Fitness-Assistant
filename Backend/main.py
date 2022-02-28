@@ -95,6 +95,18 @@ def get_dashboard_info():
     return jsonify({"steps":str(steps_today), "burnt_calories":str(burnt_calories),
             "distances":distances, "percentages":percentages, "weight":weight})
 
+@app.route('/dashboard/steps_chart', methods=["GET"])
+@check_token
+def get_steps_chart_info():
+    data = request.headers
+    fitbit_api = FitbitApi(data['fitbitAccessToken'], data['fitbitRefreshToken'])
+    strava_api = StravaApi(data['stravaRefreshToken'])
+
+    steps = fitbit_api.get_latest_seven_days_steps()
+
+    return jsonify({"steps":steps})
+
+
 
 
 @app.route('/register', methods=["POST"])
