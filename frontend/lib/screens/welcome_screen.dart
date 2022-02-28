@@ -59,7 +59,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                           width: 300, height: 300),
                       Spacer(flex: 1),
                       Text(
-                        "Welcome to my \nfitness assistant app",
+                        "Fitness assistant",
                         style: Theme.of(context)
                             .textTheme
                             .headline5

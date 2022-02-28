@@ -116,25 +116,25 @@ class _ActivityPieChartState extends State<ActivityPieChart> {
           return PieChartSectionData(
               color: Color(0xff39439f),
               value: rideSection,
-              title: 'Ride',
+              title: '',
               radius: radius);
         case 1:
           return PieChartSectionData(
               color: Color(0xffF3BBEC),
               value: runSection,
-              title: 'Run',
+              title: '',
               radius: radius);
         case 2:
           return PieChartSectionData(
               color: Color(0xff0eaeb4),
               value: walkSection,
-              title: 'Walk',
+              title: '',
               radius: radius);
         case 3:
           return PieChartSectionData(
               color: Color(0xff0eae21),
               value: hikeSection,
-              title: 'Hike',
+              title: '',
               radius: radius);
         default:
           return null;

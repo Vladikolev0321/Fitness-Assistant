@@ -77,6 +77,7 @@ class ChatInputField extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
+      height: 80,
       padding: EdgeInsets.symmetric(
         horizontal: messagePadding,
         vertical: messagePadding / 2,
