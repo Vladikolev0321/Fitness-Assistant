@@ -43,7 +43,6 @@ class _ConnectToApisScreenState extends State<ConnectToApisScreen> {
       ),
      body: Container(
        alignment: Alignment.center,
-       color: Colors.blueGrey.shade700,
        child: Column(
          mainAxisAlignment: MainAxisAlignment.center,
          children: [
