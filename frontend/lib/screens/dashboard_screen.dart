@@ -2,37 +2,14 @@ import 'dart:convert';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:frontend/models/dashboard_info.dart';
 import 'package:frontend/providers/fitness_api.dart';
 import 'package:frontend/screens/steps_chart_screen.dart';
 import 'package:frontend/widgets/pie_chart.dart';
 import 'package:provider/provider.dart';
 
 class Dashboard extends StatefulWidget {
-  int stepsCount = 0;
-  int caloriesBurned = 0;
-  double runPercentage = 0;
-  double ridePercentage = 0;
-  double walkPercentage = 0;
-  double hikePercentage = 0;
-  int runDistance = 0;
-  int rideDistance = 0;
-  int walkDistance = 0;
-  int hikeDistance = 0;
-  double weight = 0;
-  Dashboard(
-      {Key key,
-      this.stepsCount,
-      this.caloriesBurned,
-      this.runPercentage,
-      this.ridePercentage,
-      this.walkPercentage,
-      this.hikePercentage,
-      this.runDistance,
-      this.rideDistance,
-      this.walkDistance,
-      this.hikeDistance,
-      this.weight})
-      : super(key: key);
+  Dashboard({Key key,}) : super(key: key);
 
   @override
   _DashboardState createState() => _DashboardState();
@@ -44,6 +21,7 @@ class _DashboardState extends State<Dashboard> {
 
   @override
   Widget build(BuildContext context) {
+    DashboardInfo dashboardInfo = Provider.of<FitnessInfoProvider>(context, listen: false).dashboardInfo;
     return _isLoading
         ? Center(child: CircularProgressIndicator())
         : RefreshIndicator(
@@ -66,14 +44,14 @@ class _DashboardState extends State<Dashboard> {
                     ),
                     SizedBox(height: 10.0),
                     ActivityPieChart(
-                      runSection: widget.runPercentage,
-                      rideSection: widget.ridePercentage,
-                      walkSection: widget.walkPercentage,
-                      hikeSection: widget.hikePercentage,
-                      runDistance: widget.runDistance,
-                      rideDistance: widget.rideDistance,
-                      walkDistance: widget.walkDistance,
-                      hikeDistance: widget.hikeDistance,
+                      runSection: dashboardInfo.runPercentage,
+                      rideSection: dashboardInfo.ridePercentage,
+                      walkSection: dashboardInfo.walkPercentage,
+                      hikeSection: dashboardInfo.hikePercentage,
+                      runDistance: dashboardInfo.runDistance,
+                      rideDistance: dashboardInfo.rideDistance,
+                      walkDistance: dashboardInfo.walkDistance,
+                      hikeDistance: dashboardInfo.hikeDistance,
                     ),
                     const SizedBox(height: 10.0),
                     Column(
@@ -94,7 +72,7 @@ class _DashboardState extends State<Dashboard> {
                                 children: <Widget>[
                                   ListTile(
                                     title: Text(
-                                      widget.stepsCount.toString(),
+                                      dashboardInfo.stepsCount.toString(),
                                     ),
                                     trailing: Icon(
                                       FontAwesomeIcons.walking,
@@ -120,7 +98,7 @@ class _DashboardState extends State<Dashboard> {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: <Widget>[
                                 ListTile(
-                                  title: Text(widget.caloriesBurned.toString()),
+                                  title: Text(dashboardInfo.caloriesBurned.toString()),
                                   trailing: Icon(
                                     FontAwesomeIcons.fire,
                                     color: Colors.red,
@@ -144,7 +122,7 @@ class _DashboardState extends State<Dashboard> {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: <Widget>[
                                 ListTile(
-                                  title: Text(widget.weight.toString()),
+                                  title: Text(dashboardInfo.weight.toString()),
                                   trailing: Icon(
                                     FontAwesomeIcons.weight,
                                     color: Colors.blue,
@@ -170,34 +148,20 @@ class _DashboardState extends State<Dashboard> {
   @override
   void initState() {
     super.initState();
-    //_getDashboardInfo();
   }
 
   Future<void> _getDashboardInfo() async {
     setState(() {
       _isLoading = true;
     });
-    Map<String, dynamic> data;
-    await Provider.of<FitnessInfoProvider>(context, listen: false)
-        .getDashboardInfo()
-        .then((response) {
-      data = jsonDecode(response.body);
-      print(data);
-    });
-    setState(() {
-      /// Check if contains keys
-      widget.stepsCount = int.parse(data['steps']);
-      widget.caloriesBurned = int.parse(data['burnt_calories']);
-      widget.runPercentage = data['percentages']['run_distance_percentage'];
-      widget.ridePercentage = data['percentages']['ride_distance_percentage'];
-      widget.walkPercentage = data['percentages']['walk_distance_percentage'];
-      widget.hikePercentage = data['percentages']['hike_distance_percentage'];
-      widget.runDistance = data['distances']['run_distance'];
-      widget.rideDistance = data['distances']['ride_distance'];
-      widget.walkDistance = data['distances']['walk_distance'];
-      widget.hikeDistance = data['distances']['hike_distance'];
-      widget.weight = double.parse(data['weight'].toStringAsFixed(2));
-      _isLoading = false;
-    });
+    
+    final response = await Provider.of<FitnessInfoProvider>(context, listen: false).getDashboardInfo();
+    if(response.statusCode == 200){
+      Map<String, dynamic> data = jsonDecode(response.body);
+      setState(() {
+        Provider.of<FitnessInfoProvider>(context, listen: false).dashboardInfo = DashboardInfo.fromJson(data);
+        _isLoading = false;
+      });
+    }
   }
 }
