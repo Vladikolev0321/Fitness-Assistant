@@ -16,37 +16,18 @@ class ChatBody extends StatefulWidget {
 class _ChatBodyState extends State<ChatBody> {
 
   ScrollController _scrollController = new ScrollController();
-  
-  List demoChatMessages = [
-    ChatMessage(
-      text: "Hi Vladi",
-      messageType: ChatMessageType.text,
-      isSender: false,
-    ),
-    ChatMessage(
-      text: "Hello, How are you?",
-      messageType: ChatMessageType.text,
-      isSender: true,
-    )];
-
 
   void addMessage(String message, bool isSender) {
     setState(() {
-      demoChatMessages.add(ChatMessage(
-        text: message,
-        messageType: ChatMessageType.text,
-        isSender: isSender ? true : false,
-    ));
+      Provider.of<Messages>(context, listen: false).addMessage(message, isSender);
       Timer(Duration(milliseconds: 500),
             () => _scrollController.jumpTo(_scrollController.position.maxScrollExtent));
     });
   }
 
-
-
-
   @override
   Widget build(BuildContext context) {
+    List demoChatMessages = Provider.of<Messages>(context, listen: false).messages;
     return Column(
       children: [
         Expanded(
