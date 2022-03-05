@@ -1,8 +1,9 @@
 from functools import wraps
 from flask import Flask, request, jsonify
 import requests
+import database
+from models import Profile
 from services.bot_api import BotApi
-from bot_response_handler import BotResponseHandler
 from dummy_chat_controller import DummyChat
 from services.fitbit_api import FitbitApi
 from fitness_assistant import FitnessAssistant
@@ -12,9 +13,11 @@ import json
 from firebase_admin import credentials, auth
 from flask_sqlalchemy import SQLAlchemy
 #from dotenv import load_dotenv
-# to remove
 from config import FITBIT_ACCESS_TOKEN, FITBIT_CLIENT_ID, FITBIT_CLIENT_SECRET, FITBIT_REFRESH_TOKEN, SQLALCHEMY_DATABASE_URI
 from services.strava_api import StravaApi
+from database import db
+from bot_response_handler import BotResponseHandler
+bot_response_handler = BotResponseHandler()
 
 
 
@@ -23,17 +26,9 @@ CORS(app)
 app.config['SQLALCHEMY_DATABASE_URI'] = SQLALCHEMY_DATABASE_URI
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
-db = SQLAlchemy(app)
+#db = SQLAlchemy(app)
+database.init_app(app)
 bot_api = BotApi()
-bot_response_handler = BotResponseHandler()
-
-
-class Profile(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(80), unique=True, nullable=False)
-
-    def __init__(self, name):
-        self.name = name
 
 credents = credentials.Certificate('fbadmin.json')
 firebase = firebase_admin.initialize_app(credents)
@@ -153,5 +148,7 @@ def bot():
         pass
 
 if __name__ == '__main__':
-    db.create_all()
+    with app.app_context():
+        db.create_all()
     app.run(debug=True, host="0.0.0.0")
+
