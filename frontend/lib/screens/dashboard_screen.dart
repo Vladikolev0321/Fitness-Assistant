@@ -1,9 +1,11 @@
 import 'dart:convert';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:frontend/models/dashboard_info.dart';
 import 'package:frontend/providers/fitness_api.dart';
+import 'package:frontend/screens/activities_screen.dart';
 import 'package:frontend/screens/steps_chart_screen.dart';
 import 'package:frontend/widgets/pie_chart.dart';
 import 'package:provider/provider.dart';
@@ -43,15 +45,24 @@ class _DashboardState extends State<Dashboard> {
                       ),
                     ),
                     SizedBox(height: 10.0),
-                    ActivityPieChart(
-                      runSection: dashboardInfo.runPercentage,
-                      rideSection: dashboardInfo.ridePercentage,
-                      walkSection: dashboardInfo.walkPercentage,
-                      hikeSection: dashboardInfo.hikePercentage,
-                      runDistance: dashboardInfo.runDistance,
-                      rideDistance: dashboardInfo.rideDistance,
-                      walkDistance: dashboardInfo.walkDistance,
-                      hikeDistance: dashboardInfo.hikeDistance,
+                    GestureDetector(
+                      onTap: (){
+                         Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) =>
+                                          ActivityScreen()));
+                      },
+                      child: ActivityPieChart(
+                        runSection: dashboardInfo.runPercentage,
+                        rideSection: dashboardInfo.ridePercentage,
+                        walkSection: dashboardInfo.walkPercentage,
+                        hikeSection: dashboardInfo.hikePercentage,
+                        runDistance: dashboardInfo.runDistance,
+                        rideDistance: dashboardInfo.rideDistance,
+                        walkDistance: dashboardInfo.walkDistance,
+                        hikeDistance: dashboardInfo.hikeDistance,
+                      ),
                     ),
                     const SizedBox(height: 10.0),
                     Column(
@@ -106,8 +117,12 @@ class _DashboardState extends State<Dashboard> {
                                 ),
                                 Padding(
                                   padding: const EdgeInsets.only(left: 16.0),
-                                  child: Text(
-                                    'Calories Burned',
+                                  child: Row(
+                                    children: [
+                                      Text(
+                                        'Calories Burned',
+                                      ),
+                                    ],
                                   ),
                                 )
                               ],
@@ -158,10 +173,39 @@ class _DashboardState extends State<Dashboard> {
     final response = await Provider.of<FitnessInfoProvider>(context, listen: false).getDashboardInfo();
     if(response.statusCode == 200){
       Map<String, dynamic> data = jsonDecode(response.body);
+      await _getActivityAverages();
       setState(() {
         Provider.of<FitnessInfoProvider>(context, listen: false).dashboardInfo = DashboardInfo.fromJson(data);
         _isLoading = false;
       });
+    }
+  }
+
+
+  Future<void> _getActivityAverages() async{
+    final response = await Provider.of<FitnessInfoProvider>(context, listen: false).getActivitiesAverages();
+    if(response.statusCode == 200){
+      
+    Map<String, dynamic> responseBody = jsonDecode(response.body);
+    final List<double> yValues = responseBody['average_speed_list']['runs_average'].cast<double>();;
+    List<FlSpot> spots =  yValues.asMap().entries.map((e) {
+         return FlSpot(e.key.toDouble()+1, e.value);
+      }).toList();
+      
+      List<Color> lineColor = [
+          Color(0xfff3f169),
+      ];
+
+      List<LineChartBarData> lineChartBarData = [
+        LineChartBarData(
+          colors: lineColor,
+          isCurved: true,
+          spots: spots
+        )
+      ];
+
+      Provider.of<FitnessInfoProvider>(context, listen: false).runLineChartBarData = lineChartBarData;
+    
     }
   }
 }
