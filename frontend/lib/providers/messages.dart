@@ -40,9 +40,10 @@ class Messages {
       },
       body: json.encode({"message": message}),
     );
-
-    Map<String, dynamic> data = jsonDecode(response.body);
-    return data['response'];
+    if(response.statusCode == 200){  
+      Map<String, dynamic> data = jsonDecode(response.body);
+      return data['response'];
+    }
   }
 
   http.Client getClient() {
