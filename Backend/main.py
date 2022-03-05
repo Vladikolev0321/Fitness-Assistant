@@ -49,8 +49,6 @@ def check_token(f):
         return f(*args, **kwargs)
     return wrap
 
-
-
 #Api route to test jwt
 @app.route('/api/userinfo', methods=["POST"])
 @check_token
@@ -101,7 +99,16 @@ def get_steps_chart_info():
 
     return jsonify({"steps":steps})
 
+@app.route('/dashboard/activities_average', methods=["GET"])
+@check_token
+def get_activities_averages_chart_info():
+    data = request.headers
+    fitbit_api = FitbitApi(data['fitbitAccessToken'], data['fitbitRefreshToken'])
+    strava_api = StravaApi(data['stravaRefreshToken'])
 
+    average_speed = strava_api.get_activities_average_speed_list()
+
+    return jsonify({"average_speed_list":average_speed})
 
 
 @app.route('/register', methods=["POST"])
