@@ -1,5 +1,6 @@
 import random
-
+from database import db
+from models import NotUnderstoodQuestion
 
 class BotResponseHandler:
     def process_bot_response(self, data, fitbit_api, strava_api):
@@ -72,4 +73,7 @@ class BotResponseHandler:
                     return "Invalid activity"
                 return "You are not specifying for what type of activity you want information"
         else:
+            question = NotUnderstoodQuestion(data['text'])
+            db.session.add(question)
+            db.session.commit()
             return "I didn't get that, try again."
