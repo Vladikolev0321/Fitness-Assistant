@@ -68,7 +68,22 @@ class StravaApi:
          'run_distance_percentage':self.__percentage_from_whole(distances['run_distance'], sum_distances),
           'walk_distance_percentage':self.__percentage_from_whole(distances['walk_distance'], sum_distances),
            'hike_distance_percentage':self.__percentage_from_whole(distances['hike_distance'], sum_distances)}
+    
+    def get_activities_average_speed_list(self):
+        rides = self.dataset.loc[self.dataset['type'] == 'Ride']
+        runs = self.dataset.loc[self.dataset['type'] == 'Run']
+        walks = self.dataset.loc[self.dataset['type'] == 'Walk']
+        hikes = self.dataset.loc[self.dataset['type'] == 'Hike']
 
+        rides_average = list(round((rides['average_speed'] * 18) / 5, 2))
+        runs_average = list(round((runs['average_speed'] * 18) / 5, 2))
+        walks_average = list(round((walks['average_speed'] * 18) / 5, 2))
+        hikes_average = list(round((hikes['average_speed'] * 18) / 5, 2))
+
+        return {'rides_average':rides_average,
+                'runs_average':runs_average,
+                'walks_average':walks_average,
+                'hikes_average':hikes_average}
 
 
     def __percentage_from_whole(self, part, whole):
