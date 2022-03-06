@@ -13,3 +13,11 @@ class NotUnderstoodQuestion(db.Model):
 
     def __init__(self, text):
         self.text = text
+
+class UserData(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.Integer, nullable=False)
+    date = db.Column(db.DateTime, nullable=False)
+    steps_count = db.Column(db.Integer, nullable=False)
+    calories_out = db.Column(db.Integer, nullable=False)
+
