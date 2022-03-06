@@ -1,3 +1,5 @@
+import 'dart:ui';
+
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:fl_chart/fl_chart.dart';
 import 'package:frontend/models/dashboard_info.dart';
@@ -13,9 +15,27 @@ class FitnessInfoProvider {
 
   DashboardInfo _dashboardInfo;
   List<LineChartBarData> _runLineChartBarData;
+  List<LineChartBarData> _rideLineChartBarData;
   List<LineChartBarData> _walkLineChartBarData;
   List<LineChartBarData> _hikeLineChartBarData;
-  List<LineChartBarData> _rideLineChartBarData;
+
+  List<LineChartBarData> get walkLineChartBarData => _walkLineChartBarData;
+
+  set walkLineChartBarData(List<LineChartBarData> walkLineChartBarData) {
+    _walkLineChartBarData = walkLineChartBarData;
+  }
+
+  List<LineChartBarData> get hikeLineChartBarData => _hikeLineChartBarData;
+
+  set hikeLineChartBarData(List<LineChartBarData> hikeLineChartBarData) {
+    _hikeLineChartBarData = hikeLineChartBarData;
+  }
+
+  List<LineChartBarData> get rideLineChartBarData => _rideLineChartBarData;
+
+  set rideLineChartBarData(List<LineChartBarData> rideLineChartBarData) {
+    _rideLineChartBarData = rideLineChartBarData;
+  }
 
   List<LineChartBarData> get runLineChartBarData => _runLineChartBarData;
 
@@ -29,6 +49,14 @@ class FitnessInfoProvider {
     _dashboardInfo = dashboardInfo;
   }
 
+
+  void setValues(List<LineChartBarData> runLineChartData, List<LineChartBarData> rideLineChartData,
+   List<LineChartBarData> walkLineChartData, List<LineChartBarData> hikeLineChartData){
+     runLineChartBarData = runLineChartData;
+     rideLineChartBarData = rideLineChartData;
+     walkLineChartBarData = walkLineChartData;
+     hikeLineChartBarData = hikeLineChartData;
+  }
 
 
 
@@ -81,5 +109,26 @@ class FitnessInfoProvider {
       "fitbitRefreshToken": fitbitTokens['fitbitRefreshToken']
     });
     return response;
+  }
+
+  List<LineChartBarData> parseLineChartData(List<double> yValues){
+    List<FlSpot> spots =  yValues.asMap().entries.map((e) {
+         return FlSpot(e.key.toDouble()+1, e.value);
+      }).toList();
+      
+    List<Color> lineColor = [
+        Color(0xfff3f169),
+    ];
+
+    List<LineChartBarData> lineChartBarData = [
+      LineChartBarData(
+        colors: lineColor,
+        isCurved: true,
+        spots: spots
+      )
+    ];
+
+    return lineChartBarData;
+
   }
 }
