@@ -20,6 +20,11 @@ class _ActivityScreenState extends State<ActivityScreen> {
   @override
   Widget build(BuildContext context) {
     final runLineChartBarData = Provider.of<FitnessInfoProvider>(context, listen: false).runLineChartBarData;
+    final rideLineChartBarData = Provider.of<FitnessInfoProvider>(context, listen: false).rideLineChartBarData;
+    final walkLineChartBarData = Provider.of<FitnessInfoProvider>(context, listen: false).walkLineChartBarData;
+    final hikeLineChartBarData = Provider.of<FitnessInfoProvider>(context, listen: false).hikeLineChartBarData;
+
+
     print(runLineChartBarData);
     return Scaffold(
       appBar: AppBar(),
@@ -34,9 +39,21 @@ class _ActivityScreenState extends State<ActivityScreen> {
                     color: Color.fromRGBO(45, 108, 223, 1), 
                     chart: LineChartContent(lineChartBarData: runLineChartBarData)
                   ), 
-                Container(
-                  child: Center(child: Text("Page2")),
-                )
+                  ChartContainer(
+                    title: 'Riding average speed change', 
+                    color: Color.fromRGBO(45, 108, 223, 1), 
+                    chart: LineChartContent(lineChartBarData: rideLineChartBarData)
+                  ), 
+                  ChartContainer(
+                    title: 'Walking average speed change', 
+                    color: Color.fromRGBO(45, 108, 223, 1), 
+                    chart: LineChartContent(lineChartBarData: walkLineChartBarData)
+                  ), 
+                  ChartContainer(
+                    title: 'Hiking average speed change', 
+                    color: Color.fromRGBO(45, 108, 223, 1), 
+                    chart: LineChartContent(lineChartBarData: hikeLineChartBarData)
+                  ), 
               ],
             ),
         ),

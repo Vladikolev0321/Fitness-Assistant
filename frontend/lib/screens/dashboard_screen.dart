@@ -185,26 +185,18 @@ class _DashboardState extends State<Dashboard> {
   Future<void> _getActivityAverages() async{
     final response = await Provider.of<FitnessInfoProvider>(context, listen: false).getActivitiesAverages();
     if(response.statusCode == 200){
+      Map<String, dynamic> responseBody = jsonDecode(response.body);
+      final List<double> runValues = responseBody['average_speed_list']['runs_average'].cast<double>();
+      final List<double> rideValues = responseBody['average_speed_list']['rides_average'].cast<double>();
+      final List<double> walkValues = responseBody['average_speed_list']['walks_average'].cast<double>();
+      final List<double> hikeValues = responseBody['average_speed_list']['hikes_average'].cast<double>();
       
-    Map<String, dynamic> responseBody = jsonDecode(response.body);
-    final List<double> yValues = responseBody['average_speed_list']['runs_average'].cast<double>();;
-    List<FlSpot> spots =  yValues.asMap().entries.map((e) {
-         return FlSpot(e.key.toDouble()+1, e.value);
-      }).toList();
-      
-      List<Color> lineColor = [
-          Color(0xfff3f169),
-      ];
 
-      List<LineChartBarData> lineChartBarData = [
-        LineChartBarData(
-          colors: lineColor,
-          isCurved: true,
-          spots: spots
-        )
-      ];
-
-      Provider.of<FitnessInfoProvider>(context, listen: false).runLineChartBarData = lineChartBarData;
+      Provider.of<FitnessInfoProvider>(context, listen: false).setValues(
+                              Provider.of<FitnessInfoProvider>(context, listen: false).parseLineChartData(runValues),
+                              Provider.of<FitnessInfoProvider>(context, listen: false).parseLineChartData(rideValues),
+                              Provider.of<FitnessInfoProvider>(context, listen: false).parseLineChartData(walkValues),
+                              Provider.of<FitnessInfoProvider>(context, listen: false).parseLineChartData(hikeValues));
     
     }
   }
