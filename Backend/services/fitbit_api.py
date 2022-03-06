@@ -43,4 +43,9 @@ class FitbitApi:
         before_7_days_date = (datetime.datetime.now() - datetime.timedelta(days=7)).strftime("%Y-%m-%d")
         steps = self.__auth_client.time_series("activities/steps", base_date=before_7_days_date, end_date=curr_date)["activities-steps"]
         return steps
-        
+
+    def get_latest_seven_days_calories(self):
+        curr_date = datetime.datetime.now().strftime("%Y-%m-%d")
+        before_7_days_date = (datetime.datetime.now() - datetime.timedelta(days=7)).strftime("%Y-%m-%d")
+        calories = self.__auth_client.time_series("activities/calories", base_date=before_7_days_date, end_date=curr_date)["activities-calories"]
+        return calories
