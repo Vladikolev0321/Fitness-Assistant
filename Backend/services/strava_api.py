@@ -75,10 +75,10 @@ class StravaApi:
         walks = self.dataset.loc[self.dataset['type'] == 'Walk']
         hikes = self.dataset.loc[self.dataset['type'] == 'Hike']
 
-        rides_average = list(round((rides['average_speed'] * 18) / 5, 2))
-        runs_average = list(round((runs['average_speed'] * 18) / 5, 2))
-        walks_average = list(round((walks['average_speed'] * 18) / 5, 2))
-        hikes_average = list(round((hikes['average_speed'] * 18) / 5, 2))
+        rides_average = list(round((rides['average_speed'] * 18) / 5, 2))[::-1] # reversing the list
+        runs_average = list(round((runs['average_speed'] * 18) / 5, 2))[::-1]
+        walks_average = list(round((walks['average_speed'] * 18) / 5, 2))[::-1]
+        hikes_average = list(round((hikes['average_speed'] * 18) / 5, 2))[::-1]
 
         return {'rides_average':rides_average,
                 'runs_average':runs_average,
