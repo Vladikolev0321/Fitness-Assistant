@@ -1,8 +1,9 @@
+from datetime import date
 from functools import wraps
 from flask import Flask, request, jsonify
 import requests
 import database
-from models import Profile
+from models import FitnessTokens, Profile, UserData
 from services.bot_api import BotApi
 from dummy_chat_controller import DummyChat
 from services.fitbit_api import FitbitApi
@@ -35,6 +36,33 @@ firebase = firebase_admin.initialize_app(credents)
 
 #fitness_assistant = FitnessAssistant()
 #dummyChat = DummyChat(fitness_assistant)
+from apscheduler.schedulers.background import BackgroundScheduler
+
+sched = BackgroundScheduler()
+
+#@sched.scheduled_job('cron', hour=10, minute=40, second=10)
+@sched.scheduled_job('cron', hour=23, minute=59)
+def timed_job():
+    with app.app_context():
+        print("here")
+        users = Profile.query.all()
+
+        for user in users:
+            user_tokens = FitnessTokens.query.filter_by(user_id=user.id).first()
+    
+            fitbit_api = FitbitApi(user.name, user_tokens.fitbit_access_token, user_tokens.fitbit_refresh_token)
+            strava_api = StravaApi(user_tokens.strava_refresh_token)
+
+            print(date.today())
+            print(fitbit_api.get_steps_done_today())
+            print(fitbit_api.get_calories_burned_today())
+
+            entry = UserData(user.id, date.today(), fitbit_api.get_steps_done_today(), fitbit_api.get_calories_burned_today())
+            db.session.add(entry)
+            db.session.commit()
+
+sched.start()
+    
 
 def check_token(f):
     @wraps(f)
@@ -111,13 +139,28 @@ def get_activities_averages_chart_info():
     return jsonify({"average_speed_list":average_speed})
 
 
-@app.route('/register', methods=["POST"])
+@app.route('/signin', methods=["POST"])
 @check_token
 def register():
-    if not Profile.query.filter_by(name=request.user['name']):
+
+
+    print(request.user)
+    print(Profile.query.filter_by(name=request.user['name']))
+    print(Profile.query.filter_by(name=request.user['name']).first())
+
+    if not Profile.query.filter_by(name=request.user['name']).first():
         entry = Profile(request.user['name'])
         db.session.add(entry)
         db.session.commit()
+        
+        data = request.headers
+        tokens = FitnessTokens(entry.id, data['stravaRefreshToken'], data['fitbitAccessToken'], data['fitbitRefreshToken'])
+        db.session.add(tokens)
+        db.session.commit()
+
+        
+        # profile = Profile.query.filter_by(name=request.user['name'])
+        # print(profile.id)
         return f"User {request.user['name']} saved"
     return str(request.user['name'])
 
