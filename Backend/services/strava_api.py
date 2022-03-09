@@ -80,10 +80,10 @@ class StravaApi:
         walks_average = list(round((walks['average_speed'] * 18) / 5, 2))[::-1]
         hikes_average = list(round((hikes['average_speed'] * 18) / 5, 2))[::-1]
 
-        return {'rides_average':rides_average,
-                'runs_average':runs_average,
-                'walks_average':walks_average,
-                'hikes_average':hikes_average}
+        return {'rides_average':rides_average[-10:],
+                'runs_average':runs_average[-10:],
+                'walks_average':walks_average[-10:],
+                'hikes_average':hikes_average[-10:]}
 
 
     def __percentage_from_whole(self, part, whole):
