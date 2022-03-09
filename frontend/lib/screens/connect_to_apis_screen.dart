@@ -65,10 +65,12 @@ class _ConnectToApisScreenState extends State<ConnectToApisScreen> {
         child: Text("Continue"),
         onPressed: () async{
           SharedPreferences prefs = await SharedPreferences.getInstance();
-          final strava_tokens = await Provider.of<StravaFitbitProvider>(context, listen: false).getStravaTokens();
-          final fitbit_tokens = await Provider.of<StravaFitbitProvider>(context, listen: false).getFitbitTokens();
-          if(strava_tokens['stravaAccessToken'] != null && strava_tokens['stravaRefreshToken'] != null && fitbit_tokens['fitbitAccessToken'] != null && fitbit_tokens['fitbitRefreshToken'] != null){
+          final stravaTokens = await Provider.of<StravaFitbitProvider>(context, listen: false).getStravaTokens();
+          final fitbitTokens = await Provider.of<StravaFitbitProvider>(context, listen: false).getFitbitTokens();
+          if(stravaTokens['stravaAccessToken'] != null && stravaTokens['stravaRefreshToken'] != null && fitbitTokens['fitbitAccessToken'] != null && fitbitTokens['fitbitRefreshToken'] != null){
             prefs.setBool('seen', true);
+            final response = await Provider.of<StravaFitbitProvider>(context, listen: false).sendTokens(stravaTokens, fitbitTokens);
+            //if(response)
             widget.setSeen();
           } else {
             showAlert(context);

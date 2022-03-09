@@ -1,10 +1,12 @@
 import 'dart:async';
 
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:fitbitter/fitbitter.dart';
 import 'package:flutter/material.dart';
 import 'package:frontend/secret.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:strava_flutter/strava.dart';
+import 'package:http/http.dart' as http;
 
 class StravaFitbitProvider{
 
@@ -40,6 +42,22 @@ class StravaFitbitProvider{
     final String stravaAccessToken = prefs.getString("strava_accessToken");
     final String stravaRefreshToken = prefs.getString("strava_refreshToken");
     return {"stravaAccessToken":stravaAccessToken, "stravaRefreshToken":stravaRefreshToken};
+  }
+
+  Future<void> sendTokens(Map<String, dynamic> stravaTokens, Map<String, dynamic> fitbitTokens) async {
+    final _user = FirebaseAuth.instance.currentUser;
+    final idToken = await _user.getIdToken();
+    final http.Response response =
+        await http.post(Uri.parse("$baseUrl/signin"), headers: {
+      'Content-type': 'application/json',
+      "Authorization": idToken,
+      "stravaAccessToken": stravaTokens['stravaAccessToken'],
+      "stravaRefreshToken": stravaTokens['stravaRefreshToken'],
+      "fitbitAccessToken": fitbitTokens['fitbitAccessToken'],
+      "fitbitRefreshToken": fitbitTokens['fitbitRefreshToken']
+    });
+
+    return response;
   }
 
 }
