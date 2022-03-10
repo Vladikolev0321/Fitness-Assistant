@@ -65,3 +65,7 @@ class FitbitApi:
         calories = self.__auth_client.time_series("activities/calories", base_date=before_7_days_date, end_date=curr_date)["activities-calories"]
         return calories
     
+    def get_latest_logged_weights(self):
+        date_weights = self.__auth_client.get_bodyweight(period="1m")
+        return date_weights
+    
