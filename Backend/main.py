@@ -21,7 +21,6 @@ from bot_response_handler import BotResponseHandler
 bot_response_handler = BotResponseHandler()
 
 
-
 app = Flask(__name__)
 CORS(app)
 app.config['SQLALCHEMY_DATABASE_URI'] = SQLALCHEMY_DATABASE_URI
@@ -63,7 +62,6 @@ def timed_job():
 
 sched.start()
     
-
 def check_token(f):
     @wraps(f)
     def wrap(*args,**kwargs):
@@ -77,77 +75,86 @@ def check_token(f):
         return f(*args, **kwargs)
     return wrap
 
-#Api route to test jwt
-@app.route('/api/userinfo', methods=["POST"])
-@check_token
-def userinfo():
-    request.data
-    return {'data': request.user['name']}, 200
-
-# test route
-@app.route('/steps', methods=["GET"])
-@check_token
-def get_steps_try():
-    #data = request.json
-    data = request.headers
-    fitbit_api = FitbitApi(data['fitbitAccessToken'], data['fitbitRefreshToken'])
-    return str(fitbit_api.get_steps_done_today())
-
-# test route
-@app.route('/average_speed', methods=["GET"])
-@check_token
-def get_avg_speed():
-    data = request.headers
-    strava_api = StravaApi(data['stravaRefreshToken'])
-    return str(strava_api.get_average_speed_for_type_activity("Walk"))
-
 @app.route('/dashboard', methods=["GET"])
 @check_token
 def get_dashboard_info():
-    data = request.headers
-    fitbit_api = FitbitApi(data['fitbitAccessToken'], data['fitbitRefreshToken'])
-    strava_api = StravaApi(data['stravaRefreshToken'])
-    steps_today = fitbit_api.get_steps_done_today()
-    burnt_calories = fitbit_api.get_calories_burned_today()
-    weight = fitbit_api.get_last_logged_weight()
-    distances = strava_api.get_distances_for_all_activities()
-    percentages = strava_api.get_percentage_distance_for_all_activities()
+    curr_user = Profile.query.filter_by(name=request.user['name']).first()
+    if curr_user:
+        user_tokens = FitnessTokens.query.filter_by(user_id=curr_user.id).first()
+        if user_tokens:
+            fitbit_api = FitbitApi(curr_user.name, user_tokens.fitbit_access_token, user_tokens.fitbit_refresh_token)
+            strava_api = StravaApi(user_tokens.strava_refresh_token)
+            steps_today = fitbit_api.get_steps_done_today()
+            burnt_calories = fitbit_api.get_calories_burned_today()
+            weight = fitbit_api.get_last_logged_weight()
+            distances = strava_api.get_distances_for_all_activities()
+            percentages = strava_api.get_percentage_distance_for_all_activities()
 
-    return jsonify({"steps":str(steps_today), "burnt_calories":str(burnt_calories),
-            "distances":distances, "percentages":percentages, "weight":weight})
+            return jsonify({"steps":str(steps_today), "burnt_calories":str(burnt_calories),
+                    "distances":distances, "percentages":percentages, "weight":weight})
+        
 
 @app.route('/dashboard/steps_chart', methods=["GET"])
 @check_token
 def get_steps_chart_info():
-    data = request.headers
-    fitbit_api = FitbitApi(data['fitbitAccessToken'], data['fitbitRefreshToken'])
-    strava_api = StravaApi(data['stravaRefreshToken'])
+    curr_user = Profile.query.filter_by(name=request.user['name']).first()
+    if curr_user:
+        user_tokens = FitnessTokens.query.filter_by(user_id=curr_user.id).first()
+        if user_tokens:
+            fitbit_api = FitbitApi(curr_user.name, user_tokens.fitbit_access_token, user_tokens.fitbit_refresh_token)
+            strava_api = StravaApi(user_tokens.strava_refresh_token)
 
-    steps = fitbit_api.get_latest_seven_days_steps()
+            steps = fitbit_api.get_latest_seven_days_steps()
 
-    return jsonify({"steps":steps})
+            return jsonify({"steps":steps})
 
 @app.route('/dashboard/activities_average', methods=["GET"])
 @check_token
 def get_activities_averages_chart_info():
-    data = request.headers
-    fitbit_api = FitbitApi(data['fitbitAccessToken'], data['fitbitRefreshToken'])
-    strava_api = StravaApi(data['stravaRefreshToken'])
+    curr_user = Profile.query.filter_by(name=request.user['name']).first()
+    if curr_user:
+        user_tokens = FitnessTokens.query.filter_by(user_id=curr_user.id).first()
+        if user_tokens:
+            fitbit_api = FitbitApi(curr_user.name, user_tokens.fitbit_access_token, user_tokens.fitbit_refresh_token)
+            strava_api = StravaApi(user_tokens.strava_refresh_token)
 
-    average_speed = strava_api.get_activities_average_speed_list()
+            average_speed = strava_api.get_activities_average_speed_list()
 
-    return jsonify({"average_speed_list":average_speed})
+            return jsonify({"average_speed_list":average_speed})
+
+@app.route('/dashboard/calories_info', methods=["GET"])
+@check_token
+def get_calories_burned_info():
+    curr_user = Profile.query.filter_by(name=request.user['name']).first()
+    if curr_user:
+        user_tokens = FitnessTokens.query.filter_by(user_id=curr_user.id).first()
+        if user_tokens:
+            fitbit_api = FitbitApi(curr_user.name, user_tokens.fitbit_access_token, user_tokens.fitbit_refresh_token)
+            strava_api = StravaApi(user_tokens.strava_refresh_token)
+
+            calories_burned = fitbit_api.get_latest_seven_days_calories()
+            print(calories_burned);
+            return jsonify({"calories_burned_list":calories_burned})
+
+@app.route('/dashboard/weight_info', methods=["GET"])
+@check_token
+def get_logged_weight_info():
+    curr_user = Profile.query.filter_by(name=request.user['name']).first()
+    if curr_user:
+        user_tokens = FitnessTokens.query.filter_by(user_id=curr_user.id).first()
+        if user_tokens:
+            fitbit_api = FitbitApi(curr_user.name, user_tokens.fitbit_access_token, user_tokens.fitbit_refresh_token)
+            strava_api = StravaApi(user_tokens.strava_refresh_token)
+
+            dates_weight = fitbit_api.get_last_logged_weights()
+
+            return jsonify({"weight_dates_info":dates_weight})
+
 
 
 @app.route('/signin', methods=["POST"])
 @check_token
 def register():
-
-
-    print(request.user)
-    print(Profile.query.filter_by(name=request.user['name']))
-    print(Profile.query.filter_by(name=request.user['name']).first())
-
     if not Profile.query.filter_by(name=request.user['name']).first():
         entry = Profile(request.user['name'])
         db.session.add(entry)
@@ -173,29 +180,16 @@ def get_steps():
 @app.route('/bot/message', methods=["POST"])
 @check_token
 def message_bot():
-    data = request.headers
-    fitbit_api = FitbitApi(data['fitbitAccessToken'], data['fitbitRefreshToken'])
-    strava_api = StravaApi(data['stravaRefreshToken'])
-    message = request.get_json()['message']
-    response = bot_response_handler.process_bot_response(bot_api.get_response(message), fitbit_api, strava_api)
-    return jsonify({"response":str(response)})
+    curr_user = Profile.query.filter_by(name=request.user['name']).first()
+    if curr_user:
+        user_tokens = FitnessTokens.query.filter_by(user_id=curr_user.id).first()
+        if user_tokens:
+            fitbit_api = FitbitApi(curr_user.name, user_tokens.fitbit_access_token, user_tokens.fitbit_refresh_token)
+            strava_api = StravaApi(user_tokens.strava_refresh_token)
+            message = request.get_json()['message']
+            response = bot_response_handler.process_bot_response(bot_api.get_response(message), fitbit_api, strava_api)
+            return jsonify({"response":str(response)})
 
-@app.route('/bot', methods=["POST"])
-def bot():
-    try:
-        query = request.get_json()["query"]
-        result = None
-        if query == "steps-today":
-            result = fitness_assistant.get_steps_done_today()
-        elif query == "calories-burned-today":
-            result = fitness_assistant.get_calories_burned_today()
-        elif query == "avg-speed-ride":
-            result = fitness_assistant.get_average_speed_for_type_activity("Ride")
-        elif query == "get-distance-changed-ride":
-           result = fitness_assistant.get_distance_made_change_in_percents_for_type_activity("Ride")
-        return str(result)
-    except:
-        pass
 
 if __name__ == '__main__':
     with app.app_context():
