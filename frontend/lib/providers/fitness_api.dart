@@ -18,6 +18,20 @@ class FitnessInfoProvider {
   List<LineChartBarData> _rideLineChartBarData;
   List<LineChartBarData> _walkLineChartBarData;
   List<LineChartBarData> _hikeLineChartBarData;
+  List<LineChartBarData> _caloriesLineChartBarData;
+  List<LineChartBarData> _weightLineChartBarData;
+
+  List<LineChartBarData> get weightLineChartBarData => _weightLineChartBarData;
+
+  set weightLineChartBarData(List<LineChartBarData> weightLineChartBarData) {
+    _weightLineChartBarData = weightLineChartBarData;
+  }
+
+  List<LineChartBarData> get caloriesLineChartBarData => _caloriesLineChartBarData;
+
+  set caloriesLineChartBarData(List<LineChartBarData> caloriesLineChartBarData) {
+    _caloriesLineChartBarData = caloriesLineChartBarData;
+  }
 
   List<LineChartBarData> get walkLineChartBarData => _walkLineChartBarData;
 
@@ -51,62 +65,67 @@ class FitnessInfoProvider {
 
 
   void setValues(List<LineChartBarData> runLineChartData, List<LineChartBarData> rideLineChartData,
-   List<LineChartBarData> walkLineChartData, List<LineChartBarData> hikeLineChartData){
+   List<LineChartBarData> walkLineChartData, List<LineChartBarData> hikeLineChartData, List<LineChartBarData> caloriesLineChartData,
+   List<LineChartBarData> weightLineChartData){
      runLineChartBarData = runLineChartData;
      rideLineChartBarData = rideLineChartData;
      walkLineChartBarData = walkLineChartData;
      hikeLineChartBarData = hikeLineChartData;
+     caloriesLineChartBarData = caloriesLineChartData;
+     weightLineChartBarData = weightLineChartData;
   }
 
 
 
   Future<http.Response> getDashboardInfo() async {
     final idToken = await _user.getIdToken();
-    final stravaTokens = await _stravaFitbitProvider.getStravaTokens();
-    final fitbitTokens = await _stravaFitbitProvider.getFitbitTokens();
 
     final http.Response response =
         await http.get(Uri.parse("$baseUrl/dashboard"), headers: {
       'Content-type': 'application/json',
-      "Authorization": idToken,
-      "stravaAccessToken": stravaTokens['stravaAccessToken'],
-      "stravaRefreshToken": stravaTokens['stravaRefreshToken'],
-      "fitbitAccessToken": fitbitTokens['fitbitAccessToken'],
-      "fitbitRefreshToken": fitbitTokens['fitbitRefreshToken']
+      "Authorization": idToken
     });
     return response;
   }
 
   Future<http.Response> getStepsInfo() async {
     final idToken = await _user.getIdToken();
-    final stravaTokens = await _stravaFitbitProvider.getStravaTokens();
-    final fitbitTokens = await _stravaFitbitProvider.getFitbitTokens();
 
     final http.Response response =
         await http.get(Uri.parse("$baseUrl/dashboard/steps_chart"), headers: {
       'Content-type': 'application/json',
-      "Authorization": idToken,
-      "stravaAccessToken": stravaTokens['stravaAccessToken'],
-      "stravaRefreshToken": stravaTokens['stravaRefreshToken'],
-      "fitbitAccessToken": fitbitTokens['fitbitAccessToken'],
-      "fitbitRefreshToken": fitbitTokens['fitbitRefreshToken']
+      "Authorization": idToken
     });
     return response;
   }
 
   Future<http.Response> getActivitiesAverages() async {
     final idToken = await _user.getIdToken();
-    final stravaTokens = await _stravaFitbitProvider.getStravaTokens();
-    final fitbitTokens = await _stravaFitbitProvider.getFitbitTokens();
 
     final http.Response response =
         await http.get(Uri.parse("$baseUrl/dashboard/activities_average"), headers: {
       'Content-type': 'application/json',
-      "Authorization": idToken,
-      "stravaAccessToken": stravaTokens['stravaAccessToken'],
-      "stravaRefreshToken": stravaTokens['stravaRefreshToken'],
-      "fitbitAccessToken": fitbitTokens['fitbitAccessToken'],
-      "fitbitRefreshToken": fitbitTokens['fitbitRefreshToken']
+      "Authorization": idToken
+    });
+    return response;
+  }
+
+  Future<http.Response> getCaloriesInfo() async {
+    final idToken = await _user.getIdToken();
+    final http.Response response =
+        await http.get(Uri.parse("$baseUrl/dashboard/calories_info"), headers: {
+      'Content-type': 'application/json',
+      "Authorization": idToken
+    });
+    return response;
+  }
+
+  Future<http.Response> getWeightstInfo() async {
+    final idToken = await _user.getIdToken();
+    final http.Response response =
+        await http.get(Uri.parse("$baseUrl/dashboard/weight_info"), headers: {
+      'Content-type': 'application/json',
+      "Authorization": idToken
     });
     return response;
   }
