@@ -1,9 +1,10 @@
+from cProfile import run
 from datetime import date
 from functools import wraps
 from flask import Flask, request, jsonify
 import requests
 import database
-from models import FitnessTokens, Profile, UserData
+from models import FitnessTokens, Profile, StravaActivities, UserData, Weight
 from services.bot_api import BotApi
 from dummy_chat_controller import DummyChat
 from services.fitbit_api import FitbitApi
@@ -13,6 +14,7 @@ import firebase_admin
 import json
 from firebase_admin import credentials, auth
 from flask_sqlalchemy import SQLAlchemy
+import sqlalchemy
 #from dotenv import load_dotenv
 from config import FITBIT_ACCESS_TOKEN, FITBIT_CLIENT_ID, FITBIT_CLIENT_SECRET, FITBIT_REFRESH_TOKEN, SQLALCHEMY_DATABASE_URI
 from services.strava_api import StravaApi
@@ -39,7 +41,6 @@ from apscheduler.schedulers.background import BackgroundScheduler
 
 sched = BackgroundScheduler()
 
-#@sched.scheduled_job('cron', hour=10, minute=40, second=10)
 @sched.scheduled_job('cron', hour=23, minute=59)
 def timed_job():
     with app.app_context():
@@ -52,13 +53,28 @@ def timed_job():
             fitbit_api = FitbitApi(user.name, user_tokens.fitbit_access_token, user_tokens.fitbit_refresh_token)
             strava_api = StravaApi(user_tokens.strava_refresh_token)
 
-            print(date.today())
-            print(fitbit_api.get_steps_done_today())
-            print(fitbit_api.get_calories_burned_today())
-
-            entry = UserData(user.id, date.today(), fitbit_api.get_steps_done_today(), fitbit_api.get_calories_burned_today())
-            db.session.add(entry)
+            calories_steps_entry = UserData(user.id, date.today(), fitbit_api.get_steps_done_today(), fitbit_api.get_calories_burned_today())
+            db.session.add(calories_steps_entry)
             db.session.commit()
+
+            logged_weights = fitbit_api.get_latest_logged_weights()['weight']
+            for weight in logged_weights:
+                if not Weight.query.filter_by(date=weight['date']).first():
+                    weight_entry = Weight(user.id, weight['date'], weight['weight'])
+                    db.session.add(weight_entry)
+            db.session.commit()
+
+            for _, row in strava_api.dataset.iterrows():
+                if not StravaActivities.query.filter_by(upload_id=row['upload_id']).first():
+                    print("in")
+                    strava_entry = StravaActivities(user.id, row['upload_id'], row['type'], row['distance'],
+                                            row['moving_time'], row['average_speed'], row['max_speed'], row['start_date'])
+                    db.session.add(strava_entry)
+            db.session.commit()
+            
+
+            print("finished")
+                
 
 sched.start()
     
@@ -66,7 +82,7 @@ def check_token(f):
     @wraps(f)
     def wrap(*args,**kwargs):
         if not request.headers.get('authorization'):
-            return {'message': 'No token provided'},400
+            return {'message': 'No token provided'}, 400
         try:
             user = auth.verify_id_token(request.headers['authorization'])
             request.user = user
@@ -87,12 +103,32 @@ def get_dashboard_info():
             steps_today = fitbit_api.get_steps_done_today()
             burnt_calories = fitbit_api.get_calories_burned_today()
             weight = fitbit_api.get_last_logged_weight()
-            distances = strava_api.get_distances_for_all_activities()
-            percentages = strava_api.get_percentage_distance_for_all_activities()
+
+            strava_activities = StravaActivities.query.filter_by(user_id=curr_user.id).all()
+            rides = [act for act in strava_activities if act.type == 'Ride']
+            runs = [act for act in strava_activities if act.type == 'Run']
+            walks = [act for act in strava_activities if act.type == 'Walk']
+            hikes = [act for act in strava_activities if act.type == 'Hike']
+            
+            ride_distance = int(sum(act.distance for act in rides)/1000)
+            run_distance = int(sum(act.distance for act in runs)/1000)
+            walk_distance = int(sum(act.distance for act in walks)/1000)
+            hikes_distance = int(sum(act.distance for act in hikes)/1000)
+            distances = {'ride_distance':ride_distance, 'run_distance':run_distance, 'walk_distance':walk_distance,
+                         'hike_distance':hikes_distance}
+
+            sum_distances = ride_distance + run_distance + walk_distance + hikes_distance
+            percentages = {'ride_distance_percentage':percentage_from_whole(ride_distance, sum_distances),
+                            'run_distance_percentage':percentage_from_whole(run_distance, sum_distances),
+                            'walk_distance_percentage':percentage_from_whole(walk_distance, sum_distances),
+                            'hike_distance_percentage':percentage_from_whole(hikes_distance, sum_distances)}
 
             return jsonify({"steps":str(steps_today), "burnt_calories":str(burnt_calories),
                     "distances":distances, "percentages":percentages, "weight":weight})
         
+def percentage_from_whole(part, whole):
+        percentage = 100 * float(part)/float(whole)
+        return percentage
 
 @app.route('/dashboard/steps_chart', methods=["GET"])
 @check_token
@@ -104,7 +140,10 @@ def get_steps_chart_info():
             fitbit_api = FitbitApi(curr_user.name, user_tokens.fitbit_access_token, user_tokens.fitbit_refresh_token)
             strava_api = StravaApi(user_tokens.strava_refresh_token)
 
-            steps = fitbit_api.get_latest_seven_days_steps()
+            user_data = UserData.query.filter_by(user_id=curr_user.id).order_by(UserData.date)[-7:]
+            steps = []
+            for data in user_data:
+                steps.append({'dateTime':data.date.strftime("%Y-%m-%d"), 'value':str(data.steps_count)})
 
             return jsonify({"steps":steps})
 
@@ -118,7 +157,21 @@ def get_activities_averages_chart_info():
             fitbit_api = FitbitApi(curr_user.name, user_tokens.fitbit_access_token, user_tokens.fitbit_refresh_token)
             strava_api = StravaApi(user_tokens.strava_refresh_token)
 
-            average_speed = strava_api.get_activities_average_speed_list()
+            strava_activities = StravaActivities.query.filter_by(user_id=curr_user.id).order_by(StravaActivities.start_date).all()
+            rides = [act for act in strava_activities if act.type == 'Ride']
+            runs = [act for act in strava_activities if act.type == 'Run']
+            walks = [act for act in strava_activities if act.type == 'Walk']
+            hikes = [act for act in strava_activities if act.type == 'Hike']
+
+            rides_average = [round((act.average_speed * 18) / 5, 2) for act in rides][-10:]
+            runs_average = [round((act.average_speed * 18) / 5, 2) for act in runs][-10:]
+            walks_average = [round((act.average_speed * 18) / 5, 2) for act in walks][-10:]
+            hikes_average = [round((act.average_speed * 18) / 5, 2) for act in hikes][-10:]
+
+            average_speed =  {'rides_average':rides_average,
+                            'runs_average':runs_average,
+                            'walks_average':walks_average,
+                            'hikes_average':hikes_average}
 
             return jsonify({"average_speed_list":average_speed})
 
@@ -132,8 +185,11 @@ def get_calories_burned_info():
             fitbit_api = FitbitApi(curr_user.name, user_tokens.fitbit_access_token, user_tokens.fitbit_refresh_token)
             strava_api = StravaApi(user_tokens.strava_refresh_token)
 
-            calories_burned = fitbit_api.get_latest_seven_days_calories()
-            print(calories_burned);
+            user_data = UserData.query.filter_by(user_id=curr_user.id).order_by(UserData.date)[-7:]
+            calories_burned = []
+            for data in user_data:
+                calories_burned.append({'dateTime':data.date.strftime("%Y-%m-%d"), 'value':str(data.calories_out)})
+
             return jsonify({"calories_burned_list":calories_burned})
 
 @app.route('/dashboard/weight_info', methods=["GET"])
@@ -146,9 +202,10 @@ def get_logged_weight_info():
             fitbit_api = FitbitApi(curr_user.name, user_tokens.fitbit_access_token, user_tokens.fitbit_refresh_token)
             strava_api = StravaApi(user_tokens.strava_refresh_token)
 
-            dates_weight = fitbit_api.get_last_logged_weights()
+            weights = Weight.query.filter_by(user_id=curr_user.id).order_by(Weight.date)[-10:]
+            weights = [weight_info.weight * 0.453592 for weight_info in weights]
 
-            return jsonify({"weight_dates_info":dates_weight})
+            return jsonify({"weight_dates_info":weights})
 
 
 
