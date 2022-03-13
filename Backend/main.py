@@ -209,24 +209,65 @@ def get_logged_weight_info():
 
 
 
-@app.route('/signin', methods=["POST"])
+# @app.route('/sign_in', methods=["POST"])
+# @check_token
+# def sign_in():
+#     if not Profile.query.filter_by(name=request.user['name']).first():
+#         entry = Profile(request.user['name'])
+#         db.session.add(entry)
+#         db.session.commit()
+#         return jsonify({"message":f"User {request.user['name']} saved"})
+#     return jsonify({"message":f"User {request.user['name']} already exists"})
+
+
+@app.route('/save_tokens', methods=["POST"])
 @check_token
-def register():
+def save_tokens():
     if not Profile.query.filter_by(name=request.user['name']).first():
         entry = Profile(request.user['name'])
         db.session.add(entry)
         db.session.commit()
         
-        data = request.headers
-        tokens = FitnessTokens(entry.id, data['stravaRefreshToken'], data['fitbitAccessToken'], data['fitbitRefreshToken'])
-        db.session.add(tokens)
-        db.session.commit()
+        curr_user = Profile.query.filter_by(name=request.user['name']).first()
 
+        if not FitnessTokens.query.filter_by(user_id=curr_user.id).first():
+            data = request.headers
+            tokens = FitnessTokens(curr_user.id, data['stravaRefreshToken'], data['fitbitAccessToken'], data['fitbitRefreshToken'])
+            db.session.add(tokens)
+            db.session.commit()
+
+            user_tokens = FitnessTokens.query.filter_by(user_id=curr_user.id).first()
         
-        # profile = Profile.query.filter_by(name=request.user['name'])
-        # print(profile.id)
-        return f"User {request.user['name']} saved"
-    return str(request.user['name'])
+            fitbit_api = FitbitApi(curr_user.name, user_tokens.fitbit_access_token, user_tokens.fitbit_refresh_token)
+            strava_api = StravaApi(user_tokens.strava_refresh_token)
+
+            steps_and_calories_last_30_days = fitbit_api.get_last_30_days_steps_and_calories()
+            for index, day in enumerate(steps_and_calories_last_30_days['steps']):
+                if steps_and_calories_last_30_days['steps'][index]['dateTime'] == steps_and_calories_last_30_days['calories'][index]['dateTime']:
+                    calories_steps_entry = UserData(curr_user.id, steps_and_calories_last_30_days['steps'][index]['dateTime'],
+                                                    steps_and_calories_last_30_days['steps'][index]['value'],
+                                                    steps_and_calories_last_30_days['calories'][index]['value'])
+                    db.session.add(calories_steps_entry)
+            db.session.commit()
+
+            logged_weights = fitbit_api.get_latest_logged_weights()['weight']
+            for weight in logged_weights:
+                if not Weight.query.filter_by(date=weight['date']).first():
+                    weight_entry = Weight(curr_user.id, weight['date'], weight['weight'])
+                    db.session.add(weight_entry)
+            db.session.commit()
+
+            for _, row in strava_api.dataset.iterrows():
+                if not StravaActivities.query.filter_by(upload_id=row['upload_id']).first():
+                    strava_entry = StravaActivities(curr_user.id, row['upload_id'], row['type'], row['distance'],
+                                            row['moving_time'], row['average_speed'], row['max_speed'], row['start_date'])
+                    db.session.add(strava_entry)
+            db.session.commit()
+
+            return jsonify({"message":f"User {request.user['name']} keys saved and information loaded"})
+        else:
+            return jsonify({"message":"User tokens are already stored"})
+    return jsonify({"message":"You have not signed in"})
 
 
 
