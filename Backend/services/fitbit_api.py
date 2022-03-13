@@ -69,3 +69,9 @@ class FitbitApi:
         date_weights = self.__auth_client.get_bodyweight(period="1m")
         return date_weights
     
+    def get_last_30_days_steps_and_calories(self):
+        curr_date = datetime.datetime.now().strftime("%Y-%m-%d")
+        before_30_days_date = (datetime.datetime.now() - datetime.timedelta(days=30)).strftime("%Y-%m-%d")
+        steps = self.__auth_client.time_series("activities/steps", base_date=before_30_days_date, end_date=curr_date)["activities-steps"][:-1]
+        calories = self.__auth_client.time_series("activities/calories", base_date=before_30_days_date, end_date=curr_date)["activities-calories"][:-1]
+        return {'steps':steps, 'calories':calories}
