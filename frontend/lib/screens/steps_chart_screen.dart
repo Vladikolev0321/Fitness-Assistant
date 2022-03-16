@@ -16,27 +16,33 @@ class StepsChartScreen extends StatefulWidget {
 }
 
 class _StepsChartScreenState extends State<StepsChartScreen> {
-  List<StepsData> data;
+
   @override
-  Widget build(BuildContext context) {
+  Widget build(BuildContext context) {  
+    final stepsAverage = Provider.of<FitnessInfoProvider>(context, listen: false).stepsAverage;
+    List<StepsData> data = Provider.of<FitnessInfoProvider>(context, listen: false).stepsData;
+
     return Scaffold(
       appBar: AppBar(),
       body: data == null
-        ? Center(child: CircularProgressIndicator()) : StepsChart(data: data)
+        ? Center(child: CircularProgressIndicator())
+        : Column(
+          children: [
+            StepsChart(data: data),
+            SizedBox(height: 10.0),
+            Container(
+              height: 50,
+              child: Card(
+                child: Center(child: Text("Your average steps done are $stepsAverage"))
+              ),
+            ),
+          ],
+        )
       );
   }
 
    @override
   void initState() {
     super.initState();
-    _getStepsChartInfo();
-  }
-
-  Future<void> _getStepsChartInfo() async{
-    final response = await Provider.of<FitnessInfoProvider>(context, listen: false).getStepsInfo();
-    Map<String, dynamic> responseBody = jsonDecode(response.body);
-    setState(() {
-      data = List<StepsData>.from(responseBody['steps'].map((i) => StepsData.fromJson(i)));
-    });
   }
 }
