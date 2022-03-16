@@ -1,7 +1,7 @@
 import fitbit, datetime
 #from config import FITBIT_ACCESS_TOKEN, FITBIT_CLIENT_ID, FITBIT_CLIENT_SECRET, FITBIT_REFRESH_TOKEN
 from config import FITBIT_CLIENT_ID, FITBIT_CLIENT_SECRET
-from models import FitnessTokens, Profile
+from models import FitnessTokens, Profiles
 from database import db
 
 class FitbitApi:
@@ -12,7 +12,7 @@ class FitbitApi:
                                         refresh_token=refresh_token, refresh_cb=refresh_cb)
     
     def refresh_token(self, user_name):
-        profile = Profile.query.filter_by(name=user_name).first()
+        profile = Profiles.query.filter_by(username=user_name).first()
         user_tokens = FitnessTokens.query.filter_by(user_id=profile.id).first()
         def save_fitbit_tokens(token):
                 print('refreshing tokens')
