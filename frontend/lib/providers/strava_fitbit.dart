@@ -44,11 +44,11 @@ class StravaFitbitProvider{
     return {"stravaAccessToken":stravaAccessToken, "stravaRefreshToken":stravaRefreshToken};
   }
 
-  Future<void> sendTokens(Map<String, dynamic> stravaTokens, Map<String, dynamic> fitbitTokens) async {
+  Future<http.Response> sendTokens(Map<String, dynamic> stravaTokens, Map<String, dynamic> fitbitTokens) async {
     final _user = FirebaseAuth.instance.currentUser;
     final idToken = await _user.getIdToken();
     final http.Response response =
-        await http.post(Uri.parse("$baseUrl/signin"), headers: {
+        await http.post(Uri.parse("$baseUrl/save_tokens"), headers: {
       'Content-type': 'application/json',
       "Authorization": idToken,
       "stravaAccessToken": stravaTokens['stravaAccessToken'],

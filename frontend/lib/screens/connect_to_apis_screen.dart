@@ -68,10 +68,12 @@ class _ConnectToApisScreenState extends State<ConnectToApisScreen> {
           final stravaTokens = await Provider.of<StravaFitbitProvider>(context, listen: false).getStravaTokens();
           final fitbitTokens = await Provider.of<StravaFitbitProvider>(context, listen: false).getFitbitTokens();
           if(stravaTokens['stravaAccessToken'] != null && stravaTokens['stravaRefreshToken'] != null && fitbitTokens['fitbitAccessToken'] != null && fitbitTokens['fitbitRefreshToken'] != null){
-            prefs.setBool('seen', true);
             final response = await Provider.of<StravaFitbitProvider>(context, listen: false).sendTokens(stravaTokens, fitbitTokens);
+            if(response.statusCode == 200){
+              prefs.setBool('seen', true);
+              widget.setSeen();
+            }
             //if(response)
-            widget.setSeen();
           } else {
             showAlert(context);
           }
