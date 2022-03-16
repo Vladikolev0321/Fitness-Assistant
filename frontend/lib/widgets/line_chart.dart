@@ -8,6 +8,7 @@ class LineChartContent extends StatelessWidget {
   double minY;
   double maxY;
   bool displayY;
+  double intervalY;
   LineChartContent({
     @required this.lineChartBarData,
     @required this.minX,
@@ -15,6 +16,7 @@ class LineChartContent extends StatelessWidget {
     @required this.minY,
     @required this.maxY,
     @required this.displayY,
+    @required this.intervalY
   });
 
   @override
@@ -38,10 +40,10 @@ class LineChartContent extends StatelessWidget {
             },
           ),
           leftTitles: SideTitles(
-            interval: 4,
+            interval: intervalY,
             showTitles: true,
             textStyle: TextStyle(
-                color: Colors.white, fontSize: 14, fontWeight: FontWeight.bold),
+                color: Colors.white, fontSize: 12, fontWeight: FontWeight.bold),
             getTitles: (value) {
               if(displayY){
                 if(value.toInt() == 0) return '';
