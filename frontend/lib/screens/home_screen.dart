@@ -7,6 +7,7 @@ import 'package:frontend/models/dashboard_info.dart';
 import 'package:frontend/screens/chat_screen.dart';
 import 'package:frontend/screens/user_screen.dart';
 import 'package:provider/provider.dart';
+import '../models/steps_data.dart';
 import '../providers/fitness_api.dart';
 import 'dashboard_screen.dart';
 
@@ -69,50 +70,17 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     super.initState();
-    _getDashboardInfo();
-    _getActivityAverages();
+    _fetchData();
   }
 
-
-  Future<void> _getDashboardInfo() async {
+  Future<void> _fetchData() async {
     setState(() {
       _isLoading = true;
     });
-    
-    final response = await Provider.of<FitnessInfoProvider>(context, listen: false).getDashboardInfo();
-    if(response.statusCode == 200){
-      Map<String, dynamic> data = jsonDecode(response.body);
-      setState(() {
-        Provider.of<FitnessInfoProvider>(context, listen: false).dashboardInfo = DashboardInfo.fromJson(data);
+    await Provider.of<FitnessInfoProvider>(context, listen: false).fetchInfo();
+    setState(() {
         _isLoading = false;
-      });
-    }
+    });
   }
-   Future<void> _getActivityAverages() async{
-    final response = await Provider.of<FitnessInfoProvider>(context, listen: false).getActivitiesAverages();
-    if(response.statusCode == 200){
-      
-    Map<String, dynamic> responseBody = jsonDecode(response.body);
-    final List<double> ridesAverage = responseBody['average_speed_list']['runs_average'].cast<double>();
-
-    List<FlSpot> spots =  ridesAverage.asMap().entries.map((e) {
-         return FlSpot(e.key.toDouble()+1, e.value);
-      }).toList();
-      
-      List<Color> lineColor = [
-          Color(0xfff3f169),
-      ];
-
-      List<LineChartBarData> lineChartBarData = [
-        LineChartBarData(
-          colors: lineColor,
-          isCurved: true,
-          spots: spots
-        )
-      ];
-
-      Provider.of<FitnessInfoProvider>(context, listen: false).runLineChartBarData = lineChartBarData;
-    
-    }
-  }
+  
 }
