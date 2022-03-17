@@ -1,4 +1,5 @@
-from config import STRAVA_AUTH_URL, STRAVA_ACTIVITIES_URL, STRAVA_CLIENT_ID, STRAVA_CLIENT_SECRET
+# from config import STRAVA_AUTH_URL, STRAVA_ACTIVITIES_URL, STRAVA_CLIENT_ID, STRAVA_CLIENT_SECRET
+import os
 import requests
 import pandas as pd
 from pandas import json_normalize
@@ -12,17 +13,17 @@ class StravaApi:
 
     def request_new_token_and_set_dataset(self, refresh_token):
         STRAVA_DATA = {
-            'client_id': STRAVA_CLIENT_ID,
-            'client_secret': STRAVA_CLIENT_SECRET,
+            'client_id': os.environ.get('STRAVA_CLIENT_ID'),
+            'client_secret': os.environ.get('STRAVA_CLIENT_SECRET'),
             'refresh_token': refresh_token,
             'grant_type': "refresh_token",
             'f': 'json'
         }
-        response = requests.post(STRAVA_AUTH_URL, data=STRAVA_DATA, verify=False)
+        response = requests.post(os.environ.get('STRAVA_AUTH_URL'), data=STRAVA_DATA, verify=False)
         access_token = response.json()['access_token']
 
         header = {'Authorization': 'Bearer ' + access_token}
-        data_as_json = requests.get(STRAVA_ACTIVITIES_URL, headers=header).json()
+        data_as_json = requests.get(os.environ.get('STRAVA_ACTIVITIES_URL'), headers=header).json()
         self.dataset =  json_normalize(data_as_json)
     
     def get_average_speed_for_type_activity(self, type_activity): # in km/h

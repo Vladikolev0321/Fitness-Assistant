@@ -1,13 +1,14 @@
+import os
 import fitbit, datetime
 #from config import FITBIT_ACCESS_TOKEN, FITBIT_CLIENT_ID, FITBIT_CLIENT_SECRET, FITBIT_REFRESH_TOKEN
-from config import FITBIT_CLIENT_ID, FITBIT_CLIENT_SECRET
+# from config import FITBIT_CLIENT_ID, FITBIT_CLIENT_SECRET
 from models import FitnessTokens, Profiles
 from database import db
 
 class FitbitApi:
     def __init__(self, user_name, access_token, refresh_token):
         refresh_cb = self.refresh_token(user_name)
-        self.__auth_client = fitbit.Fitbit(FITBIT_CLIENT_ID, FITBIT_CLIENT_SECRET, oauth2=True,
+        self.__auth_client = fitbit.Fitbit(os.environ.get('FITBIT_CLIENT_ID'), os.environ.get('FITBIT_CLIENT_SECRET'), oauth2=True,
                                         access_token=access_token,
                                         refresh_token=refresh_token, refresh_cb=refresh_cb)
     

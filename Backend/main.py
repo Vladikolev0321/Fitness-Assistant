@@ -1,6 +1,7 @@
 from cProfile import run
 from datetime import date
 from functools import wraps
+import os
 from statistics import mean
 from flask import Flask, request, jsonify
 import requests
@@ -16,28 +17,26 @@ import json
 from firebase_admin import credentials, auth
 from flask_sqlalchemy import SQLAlchemy
 import sqlalchemy
-#from dotenv import load_dotenv
-from config import FITBIT_ACCESS_TOKEN, FITBIT_CLIENT_ID, FITBIT_CLIENT_SECRET, FITBIT_REFRESH_TOKEN, SQLALCHEMY_DATABASE_URI
 from services.strava_api import StravaApi
 from database import db
 from bot_response_handler import BotResponseHandler
 bot_response_handler = BotResponseHandler()
+from dotenv import load_dotenv
 
+load_dotenv()
 
 app = Flask(__name__)
 CORS(app)
-app.config['SQLALCHEMY_DATABASE_URI'] = SQLALCHEMY_DATABASE_URI
+app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('SQLALCHEMY_DATABASE_URI')
+print(os.environ.get('SQLALCHEMY_DATABASE_URI'))
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
-#db = SQLAlchemy(app)
 database.init_app(app)
 bot_api = BotApi()
 
 credents = credentials.Certificate('fbadmin.json')
 firebase = firebase_admin.initialize_app(credents)
 
-#fitness_assistant = FitnessAssistant()
-#dummyChat = DummyChat(fitness_assistant)
 from apscheduler.schedulers.background import BackgroundScheduler
 
 sched = BackgroundScheduler()
