@@ -183,7 +183,6 @@ class _DashboardState extends State<Dashboard> {
   @override
   void initState() {
     super.initState();
-    _fetchData();
   }
 
   Future<void> _fetchData() async {    
