@@ -16,7 +16,6 @@ class FitbitApi:
         profile = Profiles.query.filter_by(username=user_name).first()
         user_tokens = FitnessTokens.query.filter_by(user_id=profile.id).first()
         def save_fitbit_tokens(token):
-                print('refreshing tokens')
                 user_tokens.fitbit_access_token = token['access_token']
                 user_tokens.fitbit_refresh_token = token['refresh_token']
                 db.session.commit()
