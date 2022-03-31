@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:font_awesome_flutter/font_awesome_flutter.dart';
 import 'package:frontend/global.dart';
 import 'package:frontend/models/chat_message.dart';
 import 'text_message.dart';
@@ -32,7 +33,7 @@ class Message extends StatelessWidget {
               if(!message.isSender) ...[
                 CircleAvatar(
                   radius: 12,
-                  child: Image.asset('assets/chatbot.png', color: Colors.white, ),
+                  child: Image.asset('assets/bot_avatar.png', color: Colors.white, ),
                 ),
                 SizedBox(width: messagePadding / 3,)
               ],
