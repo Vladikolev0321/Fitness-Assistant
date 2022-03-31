@@ -26,9 +26,15 @@ class UserScreen extends StatelessWidget {
             backgroundImage: NetworkImage(_user.photoURL),
           ),
           SizedBox(height: 30),
-          Text("Username: ${_user.displayName}"),
-          SizedBox(height: 30),
-          Text("Email: ${_user.email}"),
+          Text("Username: ${_user.displayName}", style: Theme.of(context)
+                  .textTheme
+                  .bodyMedium
+                  .copyWith(fontWeight: FontWeight.bold),),
+          SizedBox(height: 20),
+          Text("Email: ${_user.email}", style: Theme.of(context)
+                  .textTheme
+                  .bodyMedium
+                  .copyWith(fontWeight: FontWeight.bold),),
           SizedBox(height: 30),
           OutlinedButton(child: Text("Log out"), onPressed: (){
             Provider.of<GoogleSignInProvider>(context, listen:false).logout();
