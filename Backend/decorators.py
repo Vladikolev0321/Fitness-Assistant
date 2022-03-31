@@ -5,8 +5,7 @@ from firebase_admin import credentials, auth
 from flask import request
 import ast
 
-dict_information = ast.literal_eval(os.environ.get("FB_CONFIG"))
-credents = credentials.Certificate(dict_information)
+credents = credentials.Certificate(ast.literal_eval(os.environ.get("FB_CONFIG")))
 firebase = firebase_admin.initialize_app(credents)
 
 def check_token(f):
