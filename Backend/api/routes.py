@@ -10,7 +10,6 @@ import requests
 import database
 from models import FitnessTokens, Profiles, StravaActivities, CaloriesStepsData, WeightsData
 from api.services.bot_api import BotApi
-from dummy_chat_controller import DummyChat
 from api.services.fitbit_api import FitbitApi
 from flask_cors import CORS
 import firebase_admin
