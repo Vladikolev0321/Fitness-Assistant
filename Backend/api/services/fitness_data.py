@@ -3,7 +3,6 @@ from models import CaloriesStepsData, StravaActivities, WeightsData
 
 
 def calculate_strava_activities_distance(curr_user):
-    
     strava_activities = StravaActivities.query.filter_by(user_id=curr_user.id).all()
     rides = [act for act in strava_activities if act.type == 'Ride']
     runs = [act for act in strava_activities if act.type == 'Run']
@@ -20,7 +19,6 @@ def calculate_strava_activities_distance(curr_user):
     return distances
 
 def calculate_strava_activities_distance_percentages(curr_user):
-
     distances = calculate_strava_activities_distance(curr_user)
     sum_distances = distances['ride_distance'] + distances['run_distance'] + distances['walk_distance'] + distances['hike_distance']
     percentages = {'ride_distance_percentage':percentage_from_whole(distances['ride_distance'], sum_distances),
