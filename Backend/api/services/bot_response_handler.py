@@ -50,15 +50,6 @@ class BotResponseHandler:
                 return "My purpose is to give you information about your activity"
             if predicted_intent == "get_bmr":
                 return f"Your bmr is {fitbit_api.get_bmr()}"
-            if predicted_intent == "calories_needed":
-                if len(data['entities']) == 1:
-                    entity = data['entities'][0]['value'].lower()
-                    if entity == "gain":
-                        pass
-                    if entity == "loose":
-                        pass
-                    return "You are not specifying if you want to loose or gain weight"
-                return "You are not specifying if you want to loose or gain weight"
             if predicted_intent == "change_in_performance":
                 if len(data['entities']) == 1:
                     entity = data['entities'][0]['value'].lower()
