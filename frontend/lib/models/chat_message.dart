@@ -1,4 +1,4 @@
-enum ChatMessageType { text, audio, image, video, diagram }
+enum ChatMessageType { text, image, diagram }
 
 class ChatMessage {
   final String text;
