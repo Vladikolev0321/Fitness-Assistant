@@ -5,16 +5,11 @@ import 'package:firebase_auth/firebase_auth.dart';
 class GoogleSignInProvider extends ChangeNotifier {
   final googleSignIn = GoogleSignIn();
 
-  GoogleSignInAccount _user;
-
-  GoogleSignInAccount get user => _user;
-
   Future googleLogin() async {
     try {
       final googleUser = await googleSignIn.signIn();
       if (googleUser == null) return;
-      _user = googleUser;
-
+      
       final googleAuth = await googleUser.authentication;
 
       final credentials = GoogleAuthProvider.credential(

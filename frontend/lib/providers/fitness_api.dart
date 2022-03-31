@@ -113,7 +113,7 @@ class FitnessInfoProvider {
     final idToken = await _user.getIdToken();
 
     final http.Response response =
-        await http.get(Uri.parse("$baseUrl/dashboard/steps_chart"), headers: {
+        await http.get(Uri.parse("$baseUrl/dashboard/steps_info"), headers: {
       'Content-type': 'application/json',
       "Authorization": idToken
     });

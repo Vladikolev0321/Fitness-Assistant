@@ -38,6 +38,7 @@ class Messages {
       Map<String, dynamic> data = jsonDecode(response.body);
       return data['response'];
     }
+    return "Problem occured responding";
   }
 
   http.Client getClient() {
