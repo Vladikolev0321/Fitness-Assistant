@@ -9,13 +9,9 @@ from grpc import services
 import requests
 import database
 from models import FitnessTokens, Profiles, StravaActivities, CaloriesStepsData, WeightsData
-# import services
-# from services import bot_api
-# from bot_api import BotApi
 from api.services.bot_api import BotApi
 from dummy_chat_controller import DummyChat
 from api.services.fitbit_api import FitbitApi
-# from fitness_assistant import FitnessAssistant
 from flask_cors import CORS
 import firebase_admin
 import json
@@ -105,18 +101,6 @@ def get_logged_weight_info():
             weights = get_logged_weight_last_10_times(curr_user)
             return jsonify({"weight_dates_info":weights, "weights_average":mean(weights)})
 
-
-
-# @app.route('/sign_in', methods=["POST"])
-# @check_token
-# def sign_in():
-#     if not Profile.query.filter_by(username=request.user['name']).first():
-#         entry = Profile(request.user['name'])
-#         db.session.add(entry)
-#         db.session.commit()
-#         return jsonify({"message":f"User {request.user['name']} saved"})
-#     return jsonify({"message":f"User {request.user['name']} already exists"})
-
 @app.route('/tokens', methods=["GET"])
 @check_token
 def check_if_user_has_tokens():
@@ -194,9 +178,4 @@ def message_bot():
             response = bot_response_handler.process_bot_response(bot_api.get_response(message), fitbit_api, strava_api)
             return jsonify({"response":str(response)})
 
-
-# if __name__ == '__main__':
-#     with app.app_context():
-#         db.create_all()
-#     app.run(debug=True, host="0.0.0.0")
 
