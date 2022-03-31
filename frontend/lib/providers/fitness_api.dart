@@ -12,17 +12,14 @@ import '../models/steps_data.dart';
 
 class FitnessInfoProvider {
   final _user = FirebaseAuth.instance.currentUser;
-  StravaFitbitProvider _stravaFitbitProvider;
 
-  FitnessInfoProvider(this._stravaFitbitProvider);
-
-  DashboardInfo _dashboardInfo;
-  List<LineChartBarData> _runLineChartBarData;
-  List<LineChartBarData> _rideLineChartBarData;
-  List<LineChartBarData> _walkLineChartBarData;
-  List<LineChartBarData> _hikeLineChartBarData;
-  List<LineChartBarData> _caloriesLineChartBarData;
-  List<LineChartBarData> _weightLineChartBarData;
+  DashboardInfo dashboardInfo;
+  List<LineChartBarData> runLineChartBarData;
+  List<LineChartBarData> rideLineChartBarData;
+  List<LineChartBarData> walkLineChartBarData;
+  List<LineChartBarData> hikeLineChartBarData;
+  List<LineChartBarData> caloriesLineChartBarData;
+  List<LineChartBarData> weightLineChartBarData;
   double runAverage;
   double rideAverage;
   double walkAverage;
@@ -31,49 +28,6 @@ class FitnessInfoProvider {
   int stepsAverage;
   int caloriesAverage;
   double weightAverage;
-
-  List<LineChartBarData> get weightLineChartBarData => _weightLineChartBarData;
-
-  set weightLineChartBarData(List<LineChartBarData> weightLineChartBarData) {
-    _weightLineChartBarData = weightLineChartBarData;
-  }
-
-  List<LineChartBarData> get caloriesLineChartBarData => _caloriesLineChartBarData;
-
-  set caloriesLineChartBarData(List<LineChartBarData> caloriesLineChartBarData) {
-    _caloriesLineChartBarData = caloriesLineChartBarData;
-  }
-
-  List<LineChartBarData> get walkLineChartBarData => _walkLineChartBarData;
-
-  set walkLineChartBarData(List<LineChartBarData> walkLineChartBarData) {
-    _walkLineChartBarData = walkLineChartBarData;
-  }
-
-  List<LineChartBarData> get hikeLineChartBarData => _hikeLineChartBarData;
-
-  set hikeLineChartBarData(List<LineChartBarData> hikeLineChartBarData) {
-    _hikeLineChartBarData = hikeLineChartBarData;
-  }
-
-  List<LineChartBarData> get rideLineChartBarData => _rideLineChartBarData;
-
-  set rideLineChartBarData(List<LineChartBarData> rideLineChartBarData) {
-    _rideLineChartBarData = rideLineChartBarData;
-  }
-
-  List<LineChartBarData> get runLineChartBarData => _runLineChartBarData;
-
-  set runLineChartBarData(List<LineChartBarData> runLineChartBarData) {
-    _runLineChartBarData = runLineChartBarData;
-  }
-
-  DashboardInfo get dashboardInfo => _dashboardInfo;
-
-  set dashboardInfo(DashboardInfo dashboardInfo) {
-    _dashboardInfo = dashboardInfo;
-  }
-
 
   void setValues(List<LineChartBarData> runLineChartData, List<LineChartBarData> rideLineChartData,
                 List<LineChartBarData> walkLineChartData, List<LineChartBarData> hikeLineChartData,
