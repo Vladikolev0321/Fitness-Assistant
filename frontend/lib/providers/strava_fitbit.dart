@@ -1,4 +1,6 @@
 import 'dart:async';
+import 'dart:convert';
+import 'dart:ffi';
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:fitbitter/fitbitter.dart';
@@ -11,6 +13,7 @@ import 'package:http/http.dart' as http;
 class StravaFitbitProvider{
 
   String _fitbitUserId;
+  bool areStoredTokens = false;
 
   Future connectToFitbit(BuildContext context) async {
     _fitbitUserId = await FitbitConnector.authorize(
@@ -48,7 +51,7 @@ class StravaFitbitProvider{
     final _user = FirebaseAuth.instance.currentUser;
     final idToken = await _user.getIdToken();
     final http.Response response =
-        await http.post(Uri.parse("$baseUrl/save_tokens"), headers: {
+        await http.post(Uri.parse("$baseUrl/tokens"), headers: {
       'Content-type': 'application/json',
       "Authorization": idToken,
       "stravaAccessToken": stravaTokens['stravaAccessToken'],
@@ -58,6 +61,26 @@ class StravaFitbitProvider{
     });
 
     return response;
+  }
+
+  Future<void> checkIfStoredTokens() async {
+    final _user = FirebaseAuth.instance.currentUser;
+    final idToken = await _user.getIdToken();
+    final http.Response response =
+        await http.get(Uri.parse("$baseUrl/tokens"), headers: {
+      'Content-type': 'application/json',
+      "Authorization": idToken
+    });
+
+    Map<String, dynamic> result = jsonDecode(response.body);
+    
+    print(result['are_tokens_stored']);
+    if(result['are_tokens_stored']){
+      print("in true");
+      areStoredTokens = true;
+    }else{
+      areStoredTokens = false;
+    }
   }
 
 }
