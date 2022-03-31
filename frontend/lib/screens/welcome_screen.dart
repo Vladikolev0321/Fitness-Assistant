@@ -1,11 +1,13 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:frontend/screens/splash_screen.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_signin_button/flutter_signin_button.dart';
 import 'package:frontend/providers/google_sign_in.dart';
 
-import 'connect_to_apis_screen.dart';
+import '../providers/strava_fitbit.dart';
+import 'apis_connection_screen.dart';
 import 'home_screen.dart';
 
 class WelcomeScreen extends StatefulWidget {
@@ -14,17 +16,6 @@ class WelcomeScreen extends StatefulWidget {
 }
 
 class _WelcomeScreenState extends State<WelcomeScreen> {
-  bool _seen;
-  Future<bool> checkIfFirstSeen() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    bool seen = (prefs.getBool('seen') ?? false);
-    if (seen) {
-      return true;
-    } else {
-      return false;
-    }
-  }
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -36,15 +27,7 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                 child: CircularProgressIndicator(),
               );
             } else if (snapshot.hasData) {
-              return _seen
-                  ? HomePage()
-                  : ConnectToApisScreen(
-                      setSeen: () {
-                        setState(() {
-                          _seen = true;
-                        });
-                      },
-                    );
+              return SplashScreen();
             } else if (snapshot.hasError) {
               return Center(
                 child: Text("Something went wrong"),
@@ -69,11 +52,11 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
                       Spacer(flex: 1),
                       Container(
                         child: SignInButton(Buttons.Google,
-                            text: "Sign up with Google", onPressed: () {
+                            text: "Sign up with Google", onPressed: () async {
                           final provider = Provider.of<GoogleSignInProvider>(
                               context,
                               listen: false);
-                          provider.googleLogin();
+                          await provider.googleLogin();
                         }),
                       ),
                       Spacer(
@@ -91,8 +74,6 @@ class _WelcomeScreenState extends State<WelcomeScreen> {
   @override
   void initState() {
     super.initState();
-    checkIfFirstSeen().then((value) {
-      _seen = value;
-    });
   }
+
 }
