@@ -1,6 +1,5 @@
 from dis import dis
 from tracemalloc import start
-from turtle import distance
 from database import db
 
 class Profiles(db.Model):
