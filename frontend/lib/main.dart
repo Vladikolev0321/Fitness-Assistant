@@ -25,10 +25,10 @@ class MyApp extends StatelessWidget {
         ChangeNotifierProvider<GoogleSignInProvider>(create: (context) => GoogleSignInProvider()),
         Provider<StravaFitbitProvider>(create: (context) => StravaFitbitProvider()),
         ProxyProvider<StravaFitbitProvider, FitnessInfoProvider>(
-          update: (context, stravaFitbit, _) => FitnessInfoProvider(stravaFitbit),
+          update: (context, stravaFitbit, _) => FitnessInfoProvider(),
         ),
         ProxyProvider<StravaFitbitProvider, Messages>(
-          update: (context, stravaFitbit, _) => Messages(stravaFitbit),
+          update: (context, stravaFitbit, _) => Messages(),
         ),
 
       ],
