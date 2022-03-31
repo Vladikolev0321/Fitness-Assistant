@@ -53,7 +53,7 @@ class _ActivityScreenState extends State<ActivityScreen> {
                           ),
                         ),
                     ],
-                  ), 
+                  ),
                   Column(
                     children: [
                       ChartContainer(

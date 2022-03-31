@@ -31,7 +31,7 @@ class _CaloriesScreenState extends State<CaloriesScreen> {
             child: Column(
               children: [
                 ChartContainer(
-                        title: 'Calories burned for the last 10 days', 
+                        title: 'Calories burned for the last 7 days', 
                         color: Color.fromRGBO(45, 108, 223, 1), 
                         chart: LineChartContent(lineChartBarData: caloriesLineChartBarData, minX: 1, minY: 0, maxX:10, maxY:4000, displayY: true, intervalY: 1000,)
                 ),
