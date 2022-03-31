@@ -2,13 +2,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:frontend/screens/splash_screen.dart';
 import 'package:provider/provider.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:flutter_signin_button/flutter_signin_button.dart';
 import 'package:frontend/providers/google_sign_in.dart';
-
-import '../providers/strava_fitbit.dart';
-import 'apis_connection_screen.dart';
-import 'home_screen.dart';
 
 class WelcomeScreen extends StatefulWidget {
   @override

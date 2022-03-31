@@ -1,6 +1,3 @@
-import 'dart:convert';
-
-import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:frontend/widgets/chart_container.dart';
 import 'package:provider/provider.dart';

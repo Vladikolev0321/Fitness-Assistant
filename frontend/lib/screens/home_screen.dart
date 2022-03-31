@@ -1,13 +1,8 @@
-import 'dart:convert';
-
-import 'package:fl_chart/fl_chart.dart';
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
-import 'package:frontend/models/dashboard_info.dart';
 import 'package:frontend/screens/chat_screen.dart';
 import 'package:frontend/screens/user_screen.dart';
 import 'package:provider/provider.dart';
-import '../models/steps_data.dart';
 import '../providers/fitness_api.dart';
 import 'dashboard_screen.dart';
 

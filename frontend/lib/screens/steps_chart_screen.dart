@@ -1,8 +1,5 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:frontend/models/steps_data.dart';
-import 'package:charts_flutter/flutter.dart' as charts;
 import 'package:frontend/widgets/steps_chart.dart';
 import 'package:provider/provider.dart';
 

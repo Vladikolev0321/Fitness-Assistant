@@ -2,16 +2,12 @@ import 'dart:convert';
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:frontend/models/chat_message.dart';
-import 'package:frontend/providers/strava_fitbit.dart';
 import 'package:frontend/secret.dart';
 import 'package:http/http.dart' as http;
 
 class Messages {
   final _user = FirebaseAuth.instance.currentUser;
-  StravaFitbitProvider _stravaFitbitProvider;
   List<ChatMessage> _messages = [];
-
-  Messages(this._stravaFitbitProvider);
 
   List<ChatMessage> get messages => _messages;
 
