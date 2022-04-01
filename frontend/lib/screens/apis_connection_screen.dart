@@ -63,7 +63,6 @@ class _ConnectToApisScreenState extends State<ConnectToApisScreen> {
                 if(response.statusCode == 200){
                   prefs.setBool('seen', true);
                   widget.setSeen();
-                  print("here");
                 }
                 //if(response)
               } else {

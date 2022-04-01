@@ -72,10 +72,7 @@ class StravaFitbitProvider{
     });
 
     Map<String, dynamic> result = jsonDecode(response.body);
-    
-    print(result['are_tokens_stored']);
     if(result['are_tokens_stored']){
-      print("in true");
       areStoredTokens = true;
     }else{
       areStoredTokens = false;

@@ -24,8 +24,6 @@ class _ActivityScreenState extends State<ActivityScreen> {
     final walkAverage = Provider.of<FitnessInfoProvider>(context, listen: false).walkAverage;
     final hikeAverage = Provider.of<FitnessInfoProvider>(context, listen: false).hikeAverage;
 
-
-    print(runLineChartBarData);
     return Scaffold(
       appBar: AppBar(),
       body:Center(
