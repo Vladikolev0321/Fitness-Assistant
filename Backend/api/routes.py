@@ -19,7 +19,7 @@ from flask_sqlalchemy import SQLAlchemy
 import sqlalchemy
 from api.services.strava_api import StravaApi
 from database import db
-
+import commands
 from api.services.bot_response_handler import BotResponseHandler
 bot_response_handler = BotResponseHandler()
 from dotenv import load_dotenv
@@ -33,6 +33,7 @@ app.config['SQLALCHEMY_DATABASE_URI'] = os.environ.get('SQLALCHEMY_DATABASE_URI'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 database.init_app(app)
+app.cli.add_command(commands.create_tables)
 bot_api = BotApi()
 import scheduler
 
